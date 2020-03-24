@@ -5,7 +5,6 @@ log/!index.html
 .vscode
 *.suo
 *.ntvs*
-*.njsproj
 *.sln
 *.lock
 vendor
