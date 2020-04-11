@@ -870,8 +870,8 @@ class BaseDao
     /**
      * 截断表
      */
-    public function truncate(){
-
+    public function truncate()
+    {
         $sql = "truncate table `{$this->getBeanObj()->getTableName()}`";
         return $this->getDb()->rawQueryOne($sql);
     }
@@ -879,8 +879,8 @@ class BaseDao
     /**
      * 批量插入忽略错误
      */
-    public function insertAllIgnoreErr(array $params) :void{
-
+    public function insertAllIgnoreErr(array $params) :void
+    {
         if (empty($params)) {
             $code = 4012;
             throw new MysqlException($code);
@@ -899,13 +899,13 @@ class BaseDao
         }
 
         // 拼接插入语句
-        if(Tools::superEmpty($params)){
+        if (Tools::superEmpty($params)) {
             return;
         }
 
         $valusSqlArr = [];//插入的值
         $columnsArr = [];
-        foreach ($params AS $one) {
+        foreach ($params as $one) {
             if (!is_array($one)) {//不是数组
                 return;
             }

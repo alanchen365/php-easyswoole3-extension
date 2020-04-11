@@ -30,14 +30,13 @@ class HttpRouter
      */
     public function register(RouteCollector $routeCollector): void
     {
-       foreach($this->router as $file){
-           foreach ($file as $rKey => $rType) {
-               foreach ($rType as $perfix => $routerFunction) {
-                   $routeCollector->addGroup($rKey . $perfix, $routerFunction);
-               }
-
-           }
-       }
+        foreach ($this->router as $file) {
+            foreach ($file as $rKey => $rType) {
+                foreach ($rType as $perfix => $routerFunction) {
+                    $routeCollector->addGroup($rKey . $perfix, $routerFunction);
+                }
+            }
+        }
     }
 
     /**
@@ -67,5 +66,4 @@ class HttpRouter
             $this->router[] = $data;
         }
     }
-
 }

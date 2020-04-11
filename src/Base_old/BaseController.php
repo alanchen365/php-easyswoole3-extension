@@ -231,8 +231,8 @@ class BaseController extends Controller
      * 是否需要鉴权
      * @return bool
      */
-    protected function isAuth():bool{
-
+    protected function isAuth():bool
+    {
         $isAuth = true;
 
         // 是否开启鉴权
@@ -268,14 +268,15 @@ class BaseController extends Controller
      * @return bool
      * @throws SignException
      */
-    protected function tokenTypeAuth(string $tokenType):bool {
+    protected function tokenTypeAuth(string $tokenType):bool
+    {
 
         // 鉴权
         $esRequest = Di::getInstance()->get(AsaEsConst::DI_REQUEST_OBJ);
         $tokenObj = $esRequest->getTokenObj();
 
         $tokenTypeConf = array_flip(AsaEsConst::TOKEN_TYPE);
-        if($tokenType != $tokenTypeConf[$tokenObj->token_type]){
+        if ($tokenType != $tokenTypeConf[$tokenObj->token_type]) {
             throw new SignException(3003);
         }
 
@@ -289,7 +290,6 @@ class BaseController extends Controller
 
         // 需要鉴权
         if ($isAuth) {
-
             $esRequest = Di::getInstance()->get(AsaEsConst::DI_REQUEST_OBJ);
             $tokenStr = $esRequest->getHeaderToken() ?? '';
             if (!$tokenStr) {
@@ -319,18 +319,18 @@ class BaseController extends Controller
             // 决定是否走远程鉴权 如果开启RBAC的鉴权模式 就走远程
             $rpcConstNamespace = "App\AppConst\RpcConst";
             $rbacConstNamespace = 'AsaEs\Sdk\Baseservice\RbacService';
-            if(class_exists($rpcConstNamespace) && class_exists($rbacConstNamespace)){
+            if (class_exists($rpcConstNamespace) && class_exists($rbacConstNamespace)) {
                 $rpcConst= new \ReflectionClass($rpcConstNamespace);
                 $rbacService = new \ReflectionClass($rbacConstNamespace);
                 $rpcConf = $rpcConst->getConstant('RBAC_RRC_SERVICE_CONF');
                 $isRpc = $rpcConf['enable'] ?? false;
-                if($isRpc){
-                    $tokenObj = (object)$rbacConstNamespace::jwtDecode($tokenStr,false);
-                }else{
+                if ($isRpc) {
+                    $tokenObj = (object)$rbacConstNamespace::jwtDecode($tokenStr, false);
+                } else {
                     // 没有启用rpc的时候走本地鉴权
                     $tokenObj =  Token::decode($tokenStr);
                 }
-            }else{
+            } else {
                 $tokenObj =  Token::decode($tokenStr);
             }
 

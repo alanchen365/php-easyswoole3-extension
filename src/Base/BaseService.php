@@ -23,5 +23,4 @@ class BaseService
     {
         $this->dao = $dao;
     }
-
 }

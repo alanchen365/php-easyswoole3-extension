@@ -119,7 +119,7 @@ class BaseBean
      * @param mixed      $filter
      * @return array
      */
-    function toArray(array $columns = null, $filter = null): array
+    public function toArray(array $columns = null, $filter = null): array
     {
         $data = $this->jsonSerialize();
         if ($columns) {
@@ -158,7 +158,8 @@ class BaseBean
         return $data;
     }
 
-    public function __call($actionName, $arguments){
+    public function __call($actionName, $arguments)
+    {
         return null;
     }
 

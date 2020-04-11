@@ -34,7 +34,6 @@ use EasySwoole\Core\Component\Rpc\AbstractInterface\AbstractRpcService;
 
 class BaseRpcController extends AbstractRpcService
 {
-
     public function index()
     {
         // TODO: Implement index() method.
@@ -64,7 +63,7 @@ class BaseRpcController extends AbstractRpcService
     final protected function getRequestJsonParam() :array
     {
         $args = $this->serviceCaller();
-         return json_decode($args->getArgs()[0] ?? '',true) ?? [];
+        return json_decode($args->getArgs()[0] ?? '', true) ?? [];
 //        $rawData = $this->request()->getSwooleRequest()->rawContent();
 //        return json_decode((string)$rawData, true) ?? [];
     }
