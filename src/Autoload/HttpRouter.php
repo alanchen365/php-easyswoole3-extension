@@ -22,29 +22,6 @@ class HttpRouter
      */
     public function registered(): void
     {
-        $this->loadConfig();
-    }
-
-    /**
-     * 路由注册
-     */
-    public function register(RouteCollector $routeCollector): void
-    {
-        foreach ($this->router as $file) {
-            foreach ($file as $rKey => $rType) {
-                foreach ($rType as $perfix => $routerFunction) {
-                    $routeCollector->addGroup($rKey . $perfix, $routerFunction);
-                }
-            }
-        }
-    }
-
-    /**
-     * 写入配置文件
-     */
-    private function loadConfig(): void
-    {
-
         // 动态获取路由
         $path = EASYSWOOLE_ROOT . "/App/Module";
         $files = scandir($path) ?? [];
@@ -64,6 +41,20 @@ class HttpRouter
             }
             $data = require_once $routerFile;
             $this->router[] = $data;
+        }
+    }
+
+    /**
+     * 路由注册
+     */
+    public function autoload(RouteCollector $routeCollector): void
+    {
+        foreach ($this->router as $file) {
+            foreach ($file as $rKey => $rType) {
+                foreach ($rType as $perfix => $routerFunction) {
+                    $routeCollector->addGroup($rKey . $perfix, $routerFunction);
+                }
+            }
         }
     }
 }
