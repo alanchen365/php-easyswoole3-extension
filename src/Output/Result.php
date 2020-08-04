@@ -2,8 +2,8 @@
 
 namespace Es3\Output;
 
+use App\Constant\AppConst;
 use App\Constant\ResultConst;
-use App\Consts\AppConst;
 use EasySwoole\Component\Di;
 
 class Result
@@ -54,7 +54,7 @@ class Result
             ResultConst::DATE_KEY => $result,
             ResultConst::MSG_KEY => $this->_msg,
             ResultConst::TIME_KEY => date(ResultConst::TIME_FORMAT),
-            ResultConst::ID_KEY => Di::getInstance()->get(ResultConst::ID_KEY),
+            AppConst::ID_KEY => Di::getInstance()->get(AppConst::ID_KEY),
         ];
         
 //        if (EnvConst::isHttp()) {

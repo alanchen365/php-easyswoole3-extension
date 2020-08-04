@@ -2,6 +2,9 @@
 
 namespace Es3\Base;
 
+use App\Constant\AppConst;
+use EasySwoole\Component\Di;
+
 trait Service
 {
     protected $dao;
