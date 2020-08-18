@@ -46,11 +46,11 @@ class Router
                 }
                 $data = require_once $routerFile;
                 echo  Utility::displayItem('Router',$routerFile);
+                echo "\n";
 
                 $this->router[] = $data;
             }
 
-            echo "\n";
         } catch (\Throwable $throwable) {
             echo 'Router Initialize Fail :' . $throwable->getMessage();
         }

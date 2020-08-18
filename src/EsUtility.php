@@ -25,6 +25,26 @@ class EsUtility
         return $files;
     }
 
+    /**
+     * 获取控制器中的class
+     * @param string $controllerNameSpace
+     * @return string
+     */
+    public static function getControllerClassName(string $controllerNameSpace): string
+    {
+        $className = explode('\\', $controllerNameSpace);
+        $className = (string)end($className);
+
+        return $className;
+    }
+
+    public static function getControllerModuleName(string $controllerNameSpace): string
+    {
+        $className = explode('\\', $controllerNameSpace);
+        $ModuleName = array_slice($className, -2, 1);
+        return end($ModuleName);
+    }
+
 //    public static function getClassNameByFile(string $file): string
 //    {
 ////        $fileName = explode('/', $file);

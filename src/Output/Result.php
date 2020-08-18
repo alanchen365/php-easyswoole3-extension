@@ -5,12 +5,14 @@ namespace Es3\Output;
 use App\Constant\AppConst;
 use App\Constant\ResultConst;
 use EasySwoole\Component\Di;
+use Es3\EsConfig;
 
 class Result
 {
     private $_code;
     private $_msg;
     private $_result;
+    private $_trace;
 
     public function __construct()
     {
@@ -22,6 +24,22 @@ class Result
     public function setCode(int $code): void
     {
         $this->_code = $code;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTrace()
+    {
+        return $this->_trace;
+    }
+
+    /**
+     * @param mixed $trace
+     */
+    public function setTrace($trace): void
+    {
+        $this->_trace = $trace;
     }
 
     /**
@@ -53,15 +71,16 @@ class Result
             ResultConst::CODE_KEY => $this->_code,
             ResultConst::DATE_KEY => $result,
             ResultConst::MSG_KEY => $this->_msg,
+            ResultConst::TRACE_KEY => $this->_trace,
             ResultConst::TIME_KEY => date(ResultConst::TIME_FORMAT),
             AppConst::ID_KEY => Di::getInstance()->get(AppConst::ID_KEY),
         ];
-        
-//        if (EnvConst::isHttp()) {
-//            $requestObj = Di::getInstance()->get(AsaEsConst::DI_REQUEST_OBJ);
-//            $data['request_id'] = $requestObj->getRequestId();
-//        }
 
+        /** 不是生产环境 显示调试信息 */
+        if (EsConfig::getInstance()->isProduction()) {
+            unset($data['trace']);
+        }
+        
         if (empty($this->_result)) {
             unset($data['data']);
         }

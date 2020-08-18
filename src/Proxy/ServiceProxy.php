@@ -1,0 +1,35 @@
+<?php
+
+namespace Es3\Proxy;
+
+use App\Constant\AppConst;
+use EasySwoole\Component\Singleton;
+use EasySwoole\EasySwoole\Logger;
+use Es3\Base\Service;
+use Es3\EsUtility;
+
+class ServiceProxy
+{
+    protected $service;
+
+    function __construct($namespace)
+    {
+        $className = EsUtility::getControllerClassName($namespace);
+        $moduleName = EsUtility::getControllerModuleName($namespace);
+
+        $moduleDirName = AppConst::ES_DIRECTORY_MODULE_NAME;
+        $namespace = "App\\{$moduleDirName}\\{$moduleName}\\Service\\{$className}Service";
+
+        if (class_exists($namespace)) {
+            $this->service = new $namespace();
+        } else {
+            $msg = 'service 加载失败 : ' . $namespace;
+            Logger::getInstance()->console($msg, 3, 'proxy');
+        }
+    }
+
+    public function getService()
+    {
+        return $this->service;
+    }
+}

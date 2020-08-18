@@ -2,7 +2,7 @@
 
 namespace Es3\Base;
 
-class RpcController
+trait Validate
 {
-
+    
 }

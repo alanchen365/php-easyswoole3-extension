@@ -4,59 +4,43 @@ namespace Es3\Base;
 
 use App\Constant\AppConst;
 use EasySwoole\Component\Di;
+use Es3\Exception\WaringException;
 
 trait Service
 {
     protected $dao;
 
+    public function save(array $params)
+    {
+        $this->dao->save($params);
+    }
+
+    public function destroy($where = null, $allow = false)
+    {
+        return $this->dao->destroy($where, $allow);
+    }
+
     public function get($where = null)
     {
-        return $this->getDao()->get($where = null);
+        return $this->dao->get($where);
     }
 
-    public function all($where = null)
+    public function update(array $data = [], $where = null, $allow = false)
     {
-        $this->getDao()->all($where = null);
+        return $this->dao->update($data, $where, $allow);
     }
 
-    public function searchAll(array $params = [], array $searchLinkType = [], array $page = [], array $orderBys = [], array $groupBys = []): array
+    public function getAll($where = null, array $page = [], array $orderBys = [], array $groupBys = [])
     {
+        return $this->dao->getAll($where, $page, $orderBys, $groupBys);
     }
 
-    public function insert(array $params): int
+    /**
+     * 清理where条件
+     */
+    public function clearWhere(array $params): array
     {
-    }
-
-    public function insertAll(array $params, bool $ignoreEr = false): array
-    {
-    }
-
-    public function update(array $originalFieldValues, array $updateFieldValues): void
-    {
-    }
-
-    public function delete(array $fieldValues): void
-    {
-    }
-
-    public function deletePrimaryKeys(array $ids): void
-    {
-    }
-
-    public function getAutoIncrement()
-    {
-    }
-
-    public function setAutoIncrement(int $autoIncrement)
-    {
-    }
-
-    public function getLast()
-    {
-    }
-
-    public function truncate()
-    {
+        return $this->dao->clearWhere($params);
     }
 
     /**
@@ -70,7 +54,7 @@ trait Service
     /**
      * @param mixed $dao
      */
-    protected function setDao($dao): void
+    public function setDao($dao): void
     {
         $this->dao = $dao;
     }
