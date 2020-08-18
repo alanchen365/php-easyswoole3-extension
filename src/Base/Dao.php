@@ -32,7 +32,6 @@ trait Dao
     public function getAll($where = null, array $page = [], array $orderBys = ['id' => 'DESC'], array $groupBys = [])
     {
         $model = $this->model::create();
-        $model = DepotModel::create();
 
         if ($page) {
             $model->limit($page[0], $page[1]);
