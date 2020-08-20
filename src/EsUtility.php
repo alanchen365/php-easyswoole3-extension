@@ -2,6 +2,9 @@
 
 namespace Es3;
 
+use App\Constant\AppConst;
+use EasySwoole\ORM\Utility\Schema\Table;
+
 class EsUtility
 {
 
@@ -43,6 +46,29 @@ class EsUtility
         $className = explode('\\', $controllerNameSpace);
         $ModuleName = array_slice($className, -2, 1);
         return end($ModuleName);
+    }
+
+    public static function tableLogicDelete(Table $schemaInfo): ?string
+    {
+        $columns = $schemaInfo->getColumns();
+
+        foreach (AppConst::TABLE_LOGIC_DELETE as $field) {
+            if (isset($columns[$field])) {
+                return $field;
+            }
+        }
+        return null;
+    }
+
+    public static function clearParams($params = []): ?array
+    {
+        /** 清理掉不相关变量 */
+        foreach ($params as $field => $value) {
+            if (!isset($columns[$field])) {
+                unset($params[$field]);
+            }
+        }
+        return $params ?? null;
     }
 
 //    public static function getClassNameByFile(string $file): string

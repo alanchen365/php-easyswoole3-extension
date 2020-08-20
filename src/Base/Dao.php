@@ -4,6 +4,7 @@ namespace Es3\Base;
 
 use App\Constant\ResultConst;
 use App\Module\Owtb\Model\DepotModel;
+use Es3\Exception\ErrorException;
 
 trait Dao
 {
@@ -11,27 +12,61 @@ trait Dao
 
     public function save(array $params)
     {
-        $this->model::create($params)->save();
+        /** 调整参数 */
+        $params = $this->adjustWhere($params);
+        return $this->model::create($params)->save();
     }
 
-    public function get($where = null)
+    public function get(array $where = [], array $field = [])
     {
-        return $this->model::create()->get($where);
+        $LogicDelete = $this->model->getLogicDelete();
+        $where = array_merge($where, $LogicDelete);
+
+        return $this->model::create()->field($field)->get($where);
     }
 
-    public function destroy($where = null, $allow = false)
+    public function delete($where = null, $allow = false): int
     {
-        return $this->model::create()->destroy($where, $allow);
+        $this->model = $this->model::create();
+        $this->model->delete($where, $allow);
+
+        $lastErrorNo = $this->model->lastQueryResult()->getLastErrorNo();
+        if ($lastErrorNo !== 0) {
+            throw new ErrorException(1004, $model->lastQueryResult()->getLastError());
+        }
+        
+        return intval($this->model->lastQueryResult()->getAffectedRows());
     }
 
-    public function update(array $data = [], $where = null, $allow = false)
+    public function update(array $data = [], array $primary, $allow = false): int
     {
-        return $this->model::create()->update($data, $where, $allow);
+        $schemaInfo = $this->model->schemaInfo();
+        $primaryKey = $schemaInfo->getPkFiledName();
+
+        // 不允许更新主键
+        unset($data[$primaryKey]);
+
+        /** 调整参数 */
+        $data = $this->adjustWhere($data);
+
+        $this->model = $this->model::create();
+        $this->model->update($data, $primary, $allow);
+
+        $lastErrorNo = $this->model->lastQueryResult()->getLastErrorNo();
+        if ($lastErrorNo !== 0) {
+            throw new ErrorException(1005, $model->lastQueryResult()->getLastError());
+        }
+
+        return intval($this->model->lastQueryResult()->getAffectedRows());
     }
 
-    public function getAll($where = null, array $page = [], array $orderBys = ['id' => 'DESC'], array $groupBys = [])
+    public function getAll($where = null, array $page = [], array $orderBys = ['id' => 'DESC'], array $groupBys = [], array $field = [])
     {
         $model = $this->model::create();
+
+        $LogicDelete = $this->model->getLogicDelete();
+        $where = array_merge($where, $LogicDelete);
+        $where = $this->adjustWhere($where);
 
         if ($page) {
             $model->limit($page[0], $page[1]);
@@ -49,18 +84,23 @@ trait Dao
             }
         }
 
-        $list = $model->all($where);
+        $list = $model->field($field)->withTotalCount()->all($where);
         $total = $model->lastQueryResult()->getTotalCount();
-        
+
         return [ResultConst::RESULT_LIST_KEY => $list, ResultConst::RESULT_TOTAL_KEY => $total];
     }
 
     /**
      * 清理where条件
      */
-    public function clearWhere(array $params): array
+    public function adjustWhere(array $params, $isLogicDelete = true): array
     {
-        return $this->model->clearWhere($params);
+        return $this->model->adjustWhere($params, $isLogicDelete);
+    }
+
+    public function getLogicDelete(): array
+    {
+        return $this->model->getLogicDelete();
     }
 
     private function getModel()

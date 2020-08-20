@@ -3,6 +3,8 @@
 namespace Es3\Base;
 
 use App\Constant\AppConst;
+use App\Constant\ResultConst;
+use App\Module\Owtb\Model\DepotModel;
 use EasySwoole\Component\Di;
 use EasySwoole\EasySwoole\Core;
 use EasySwoole\Http\AbstractInterface\Controller;
@@ -15,6 +17,7 @@ use Es3\EsConfig;
 use Es3\EsUtility;
 use Es3\Exception\WaringException;
 use Es3\Output\Json;
+use Es3\Output\Result;
 use Es3\Proxy\DaoProxy;
 use Es3\Proxy\ModelProxy;
 use Es3\Proxy\ServiceProxy;
@@ -24,7 +27,125 @@ class BaseController extends Controller
 {
     protected $service;
 
-    /**通用验证器 */
+    function get()
+    {
+        /** @var $result Result */
+        $result = Di::getInstance()->get(AppConst::DI_RESULT);
+
+        /** 获取参数 */
+        $params = $this->getParams();
+
+        /** 如果传递了id 就查询 */
+        $data = null;
+        $id = $params['id'] ?? null;
+        if ($id) {
+            $data = $this->getService()->get(['id' => $id]);
+        }
+
+        /** 返回结果 */
+        $result->set(ResultConst::RESULT_DATA_KEY, $data);
+        Json::success();
+    }
+
+    function index()
+    {
+        /** @var $result Result */
+        $result = Di::getInstance()->get(AppConst::DI_RESULT);
+
+        /** 获取分页参数  */
+        $page = $this->getPage();
+
+        /** 获取所有参数 */
+        $params = $this->getParams();
+
+        /** 去掉不属于该表之外的字段 */
+        $params = $this->getService()->adjustWhere($params);
+
+        /** 查询列表 */
+        $depotList = $this->getService()->getAll($params, $page, [], [], []);
+
+        $result->set(ResultConst::RESULT_TOTAL_KEY, $depotList[ResultConst::RESULT_TOTAL_KEY]);
+        $result->set(ResultConst::RESULT_LIST_KEY, $depotList[ResultConst::RESULT_LIST_KEY]);
+
+        Json::success();
+    }
+
+    function delete()
+    {
+        /** @var $result Result */
+        $result = Di::getInstance()->get(AppConst::DI_RESULT);
+
+        /** 获取参数 参数调整 */
+        $params = $this->getParams();
+        $LogicDelete = $this->getService()->getLogicDelete();
+
+        /** 先查一下 不存在就报错 */
+        $id = $params['id'] ?? null;
+        $data = $this->getService()->get(['id' => $id]);
+        if (!isset($data)) {
+            throw new WaringException(1009, "数据不存在或已删除");
+        }
+
+        /** 执行删除 */
+        $total = $this->getService()->delete([$id]);
+        $result->set(ResultConst::RESULT_TOTAL_KEY, $total);
+
+        Json::success();
+    }
+
+    function update()
+    {
+        /** @var $result Result */
+        $result = Di::getInstance()->get(AppConst::DI_RESULT);
+
+        /** 获取参数 参数调整 */
+        $params = $this->getParams();
+        /** 如果传递了Id 就查询 */
+        $id = $params['id'] ?? null;
+        $data = $this->getService()->get(['id' => $id]);
+
+        if (!isset($data)) {
+            throw new WaringException(1009, "数据不存在或已删除");
+        }
+
+        // todo 敏感参数自行过滤
+        $total = $this->getService()->update($params, [$id]);
+
+        $data = $this->getService()->get(['id' => $id]);
+        $result->set(ResultConst::RESULT_TOTAL_KEY, $total);
+        $result->set(ResultConst::RESULT_DATA_KEY, $data);
+
+        Json::success();
+    }
+
+    function save()
+    {
+        try {
+            /** @var $result Result */
+            $result = Di::getInstance()->get(AppConst::DI_RESULT);
+
+            /** 获取所有参数 */
+            $params = $this->getParams();
+
+            /** 保存数据 */
+            $id = $this->getService()->save($params);
+
+            /** 查询插入的数据 */
+            $depot = $this->getService()->get($id);
+
+            $result->set('depot', $depot);
+
+            Json::success();
+        } catch (\Throwable $throwable) {
+            /** 回滚事物 */
+            DbManager::getInstance()->rollback();
+            Json::fail($throwable, $throwable->getCode(), $throwable->getMessage());
+        } finally {
+            /** 提交事物 */
+            DbManager::getInstance()->commit();
+        }
+    }
+
     protected function onRequest(?string $action): ?bool
     {
         try {
@@ -64,9 +185,14 @@ class BaseController extends Controller
         return true;
     }
 
+    /**
+     * 获取所有请求参数
+     * @return array
+     */
     public function getParams(): array
     {
         $params = $this->request()->getRequestParam();
+
         $raw = $this->request()->getBody()->__toString();
         $rawParams = json_decode($raw, true);
 
@@ -82,6 +208,10 @@ class BaseController extends Controller
         throw $throwable;
     }
 
+    /**
+     * 控制器找不到时
+     * @param string|null $action
+     */
     protected function actionNotFound(?string $action)
     {
         $this->response()->withStatus(406);
@@ -89,7 +219,7 @@ class BaseController extends Controller
     }
 
     /**
-     * 获取分页
+     * 获取分页参数
      */
     public function getPage(): array
     {

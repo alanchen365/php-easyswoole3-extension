@@ -67,7 +67,6 @@ class EasySwooleEvent
          */
         Logger::getInstance()->onLog()->set('remotePush', function ($msg, $logLevel, $category) use ($console) {
 
-            var_dump('sss');
             foreach ($console->allFd() as $item) {
                 $console->send($item['fd'], $msg);
             }
