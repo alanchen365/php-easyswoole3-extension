@@ -31,7 +31,7 @@ class BaseController extends Controller
     {
         /** @var $result Result */
         $result = Di::getInstance()->get(AppConst::DI_RESULT);
-
+        
         /** 获取参数 */
         $params = $this->getParams();
 
@@ -214,8 +214,8 @@ class BaseController extends Controller
      */
     protected function actionNotFound(?string $action)
     {
-        $this->response()->withStatus(406);
-        $this->response()->end();
+//        $this->response()->withStatus(406);
+//        $this->response()->end();
     }
 
     /**

@@ -19,6 +19,10 @@ class ModelProxy
         $moduleDirName = AppConst::ES_DIRECTORY_MODULE_NAME;
         $namespace = "App\\{$moduleDirName}\\{$moduleName}\\Model\\{$className}Model";
 
+        if ($moduleName == AppConst::ES_DIRECTORY_CONTROLLER_NAME) {
+            return;
+        }
+
         if (class_exists($namespace)) {
             $this->model = new $namespace();
         } else {

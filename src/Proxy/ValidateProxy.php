@@ -20,6 +20,10 @@ class ValidateProxy
         $moduleDirName = AppConst::ES_DIRECTORY_MODULE_NAME;
         $namespace = "App\\{$moduleDirName}\\{$moduleName}\\Validate\\{$className}Validate";
 
+        if ($moduleName == AppConst::ES_DIRECTORY_CONTROLLER_NAME) {
+            return;
+        }
+
         if (class_exists($namespace)) {
             $this->validate = new $namespace();
         } else {
@@ -27,9 +31,13 @@ class ValidateProxy
             Logger::getInstance()->console($msg, 3, 'proxy');
         }
     }
-    
+
     public function validate(string $action, array $params)
     {
+        if (!$this->validate) {
+            return;
+        }
+
         $ref = new \ReflectionClass($this->validate);
 
         if ($ref->hasMethod($action) && $ref->getMethod($action)->isPublic() && !$ref->getMethod($action)->isStatic()) {

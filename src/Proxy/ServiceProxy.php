@@ -20,7 +20,11 @@ class ServiceProxy
         $moduleDirName = AppConst::ES_DIRECTORY_MODULE_NAME;
         $namespace = "App\\{$moduleDirName}\\{$moduleName}\\Service\\{$className}Service";
 
-        if (class_exists($namespace)) {
+        if ($moduleName == AppConst::ES_DIRECTORY_CONTROLLER_NAME) {
+            return;
+        }
+
+        if (class_exists($namespace) && $moduleDirName != 'Controller') {
             $this->service = new $namespace();
         } else {
             $msg = 'service 加载失败 : ' . $namespace;

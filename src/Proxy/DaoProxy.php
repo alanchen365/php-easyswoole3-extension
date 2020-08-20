@@ -19,6 +19,10 @@ class DaoProxy
         $moduleDirName = AppConst::ES_DIRECTORY_MODULE_NAME;
         $namespace = "App\\{$moduleDirName}\\{$moduleName}\\Dao\\{$className}Dao";
 
+        if ($moduleName == AppConst::ES_DIRECTORY_CONTROLLER_NAME) {
+            return;
+        }
+
         if (class_exists($namespace)) {
             $this->dao = new $namespace();
         }else {
