@@ -31,7 +31,7 @@ class BaseController extends Controller
     {
         /** @var $result Result */
         $result = Di::getInstance()->get(AppConst::DI_RESULT);
-        
+
         /** 获取参数 */
         $params = $this->getParams();
 
@@ -131,14 +131,13 @@ class BaseController extends Controller
             $id = $this->getService()->save($params);
 
             /** 查询插入的数据 */
-            $depot = $this->getService()->get($id);
+            $depot = $this->getService()->get(['id' => $id]);
 
-            $result->set('depot', $depot);
+            $result->set(ResultConst::RESULT_DATA_KEY, $depot);
 
             Json::success();
         } catch (\Throwable $throwable) {
             /** 回滚事物 */
-            DbManager::getInstance()->rollback();
             Json::fail($throwable, $throwable->getCode(), $throwable->getMessage());
         } finally {
             /** 提交事物 */
