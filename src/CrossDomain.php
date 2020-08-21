@@ -16,7 +16,7 @@ class CrossDomain extends Config
         $response->withHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, system_id, app_code, token, identity');
 
         /** 生产情况的跨域 由 运维处理 */
-        if (!EsConfig::getInstance()->isProduction()) {
+        if (!isProduction()) {
 
             $response->withHeader('Access-Control-Allow-Origin', $origin);
             $response->withHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, PUT, OPTIONS');

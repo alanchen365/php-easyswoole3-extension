@@ -34,12 +34,12 @@ class EsConfig extends Config
         return strtolower($this->getConf('ENV'));
     }
 
-    /**
-     * 是否是生产环境
-     */
-    public function isProduction(): bool
-    {
-        $env = strtolower($this->getConf('ENV'));
-        return $env === strtolower('PRODUCTION') ? true : false;
-    }
+//    /**
+//     * 是否是生产环境
+//     */
+//    public function isProduction(): bool
+//    {
+//        $env = strtolower($this->getConf('ENV'));
+//        return $env === strtolower('PRODUCTION') ? true : false;
+//    }
 }

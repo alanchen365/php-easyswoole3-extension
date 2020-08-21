@@ -77,7 +77,7 @@ class Result
         ];
 
         /** 不是生产环境 显示调试信息 */
-        if (EsConfig::getInstance()->isProduction()) {
+        if (isProduction()) {
             unset($data['trace']);
         }
         
