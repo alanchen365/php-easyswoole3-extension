@@ -40,9 +40,10 @@ class Config
                 $data = require_once $routerFile ?? [];
                 foreach ($data as $key => $conf) {
                     $instance->setConf(strtolower(basename($file, '.php')), (array)$data);
-                    echo  Utility::displayItem('Config',"{$path}{$file}");
-                    echo "\n";
                 }
+
+                echo Utility::displayItem('Config', "{$path}{$file}");
+                echo "\n";
             }
         } catch (\Throwable $throwable) {
             echo 'Config Initialize Fail :' . $throwable->getMessage();
