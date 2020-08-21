@@ -33,7 +33,6 @@ class Jwt
 
             return (array)$token;
         } catch (\Throwable $throwable) {
-            Logger::getInstance()->notice('鉴权错误 : ' . $throwable->getMessage(), 'auth');
             throw $throwable;
         }
     }
