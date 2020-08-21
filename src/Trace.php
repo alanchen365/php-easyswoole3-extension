@@ -22,11 +22,11 @@ class Trace
      */
     public static function getRequestId()
     {
-        if (!Di::getInstance()->get(AppConst::ID_KEY)) {
+        if (!Di::getInstance()->get(AppConst::DI_TRACE_CODE)) {
             Trace::createRequestId();
         }
 
-        return Di::getInstance()->get(AppConst::ID_KEY);
+        return Di::getInstance()->get(AppConst::DI_TRACE_CODE);
     }
 
     /**
@@ -34,6 +34,6 @@ class Trace
      */
     public static function createRequestId(): void
     {
-        Di::getInstance()->set(AppConst::ID_KEY, md5(uniqid(microtime(true), true)));
+        Di::getInstance()->set(AppConst::DI_TRACE_CODE, md5(uniqid(microtime(true), true)));
     }
 }

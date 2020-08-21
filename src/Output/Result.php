@@ -73,7 +73,7 @@ class Result
             ResultConst::MSG_KEY => $this->_msg,
             ResultConst::TRACE_KEY => $this->_trace,
             ResultConst::TIME_KEY => date(ResultConst::TIME_FORMAT),
-            AppConst::ID_KEY => Di::getInstance()->get(AppConst::ID_KEY),
+            AppConst::DI_TRACE_CODE => Di::getInstance()->get(AppConst::DI_TRACE_CODE),
         ];
 
         /** 不是生产环境 显示调试信息 */
