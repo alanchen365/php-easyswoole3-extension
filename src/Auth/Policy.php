@@ -19,7 +19,9 @@ class Policy
         $isAuth = true;
 
         $policy = new \EasySwoole\Policy\Policy();
-        $policyConf = EsConfig::getInstance()->getConf('policy', true);
+
+        $isAuthKey = 'policy.' . AppConst::CONF_IS_AUTH;
+        $policyConf = EsConfig::getInstance()->getConf($isAuthKey, true);
         foreach ($policyConf as $key => $conf) {
             $policy->addPath($key, $conf);
         }
@@ -27,6 +29,9 @@ class Policy
         $request = Di::getInstance()->get(AppConst::DI_REQUEST);
         $uri = $request->getServerParams()['request_uri'];
         $iaAuth = $policy->check($uri);
+
+        var_dump($iaAuth, '$iaAuth');
+
         if ($iaAuth == PolicyNode::EFFECT_ALLOW) {
             $isAuth = false;
         }
