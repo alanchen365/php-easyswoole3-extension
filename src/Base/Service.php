@@ -134,7 +134,7 @@ trait Service
     /**
      * @return mixed
      */
-    private function getDao()
+    public function getDao()
     {
         return $this->dao;
     }

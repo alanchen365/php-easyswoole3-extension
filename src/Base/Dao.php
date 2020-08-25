@@ -103,7 +103,7 @@ trait Dao
         return $this->model->getLogicDelete();
     }
 
-    private function getModel()
+    public function getModel()
     {
         return $this->model;
     }
