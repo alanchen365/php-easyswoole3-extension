@@ -5,6 +5,7 @@ namespace Es3\Base;
 use App\Constant\ResultConst;
 use App\Module\Owtb\Model\DepotModel;
 use Es3\Exception\ErrorException;
+use EasySwoole\Mysqli\QueryBuilder;
 
 trait Dao
 {
@@ -15,6 +16,16 @@ trait Dao
         /** 调整参数 */
         $params = $this->adjustWhere($params);
         return $this->model::create($params)->save();
+    }
+
+    public function deleteField(array $data): int
+    {
+        if (superEmpty($data)) {
+            throw new ErrorException(1010, "deleteField()删除参数不能为空");
+        }
+        $this->model = $this->model::create();
+        $res = $this->model->destroy($data);
+        return intval($res);
     }
 
     public function get(array $where = [], array $field = [])
@@ -34,7 +45,7 @@ trait Dao
         if ($lastErrorNo !== 0) {
             throw new ErrorException(1004, $model->lastQueryResult()->getLastError());
         }
-        
+
         return intval($this->model->lastQueryResult()->getAffectedRows());
     }
 
@@ -88,6 +99,13 @@ trait Dao
         $total = $model->lastQueryResult()->getTotalCount();
 
         return [ResultConst::RESULT_LIST_KEY => $list, ResultConst::RESULT_TOTAL_KEY => $total];
+    }
+
+    public function truncate(): void
+    {
+        $schemaInfo = $this->model->schemaInfo();
+        $this->model = $this->model::create();
+        $this->model->query((new QueryBuilder())->raw('TRUNCATE TABLE ' . $schemaInfo->getTable()));
     }
 
     /**

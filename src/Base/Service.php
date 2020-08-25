@@ -48,7 +48,7 @@ trait Service
      */
     public function getLast(string $field = 'id'): ?array
     {
-        
+
     }
 
     /**
@@ -81,11 +81,9 @@ trait Service
      * 根据某列删除
      * @return int
      */
-    public function deleteField(): int
+    public function deleteField(array $data): int
     {
-
-        $count = 0;
-        return intval($count);
+        return $this->dao->deleteField($data);
     }
 
     public function query()
@@ -98,7 +96,7 @@ trait Service
      */
     public function truncate(): void
     {
-
+        $this->dao->truncate();
     }
 
     /**
