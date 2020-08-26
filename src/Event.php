@@ -20,12 +20,12 @@ class Event extends Container
         }
     }
 
-    function hook($event, ...$arg)
+    function hook($event, $function, ...$arg)
     {
         $event = strtolower($event);
         $call = $this->get($event);
         if (is_callable($call)) {
-            return call_user_func($call, $event, ...$arg);
+            return call_user_func($call, $event, $function, ...$arg);
         } else {
             return null;
         }

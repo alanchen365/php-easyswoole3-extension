@@ -24,7 +24,7 @@ class Event
 
             foreach ($modules as $module) {
 
-                \Es3\Event::getInstance()->set($module, function ($module, ...$args) use ($path) {
+                \Es3\Event::getInstance()->set($module, function ($module, $function, ...$args) use ($path) {
 
                     $module = ucwords($module);
                     $eventPath = $path . $module . '/' . AppConst::ES_FILE_NAME_EVENT;
@@ -39,19 +39,18 @@ class Event
                     }
 
                     $ref = new \ReflectionClass($namespace);
-                    if (!($ref->hasMethod('run') && $ref->getMethod('run')->isPublic() && !$ref->getMethod('run')->isStatic())) {
+                    if (!($ref->hasMethod($function) && $ref->getMethod($function)->isPublic() && !$ref->getMethod($function)->isStatic())) {
                         Logger::getInstance()->notice("没有找到" . $namespace . "的run方法");
                         return;
                     }
 
                     $namespace = new $namespace();
-                    $namespace->run($module, ...$args);
+                    $namespace->$function(...$args);
                 });
 
                 echo Utility::displayItem('Event', strtolower($module));
                 echo "\n";
             }
-
         } catch (\Throwable $throwable) {
             echo 'Event Initialize Fail :' . $throwable->getMessage();
         }
