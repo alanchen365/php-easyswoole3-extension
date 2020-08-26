@@ -61,20 +61,14 @@ trait Service
 
     /**
      * 批量插入
-     * @param array $params
-     * @return array
+     * @param array $data 二维数组
+     * @param bool $replace 是否覆盖
+     * @param bool $transaction 是否开启事务，默认为true，
+     * @param string $retrunField 返回字段
      */
-    public function insertAll(array $params): array
+    public function insertAll(array $data, $replace = true, $transaction = true, $returnField = 'id'): array
     {
-
-        [
-            ['id' => '1'],
-            ['id' => '2'],
-        ];
-
-        $ids = [];
-
-        return $ids;
+        return $this->dao->insertAll($data, $replace, $transaction, $returnField);
     }
 
     /**

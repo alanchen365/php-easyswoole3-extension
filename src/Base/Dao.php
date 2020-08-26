@@ -108,6 +108,14 @@ trait Dao
         $this->model->query((new QueryBuilder())->raw('TRUNCATE TABLE ' . $schemaInfo->getTable()));
     }
 
+    public function insertAll(array $data, $replace = true, $transaction = true, $returnField = 'id'): array
+    {
+        $this->model = $this->model::create();
+        $res = $this->model->saveAll($data, $replace, $transaction);
+        $res = json_decode(json_encode($res), true);
+        return [$returnField => array_column($res, $returnField)];
+    }
+
     /**
      * 清理where条件
      */
