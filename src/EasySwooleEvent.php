@@ -34,6 +34,9 @@ class EasySwooleEvent
         /** 注入http异常处理 */
         Di::getInstance()->set(SysConst::HTTP_EXCEPTION_HANDLER, [HttpThrowable::class, 'run']);
 
+        /** 事件注册 */
+        \Es3\AutoLoad\Event::getInstance()->autoLoad();
+        
         /** 文档生成 */
         Es3Doc::getInstance()->generator();
 

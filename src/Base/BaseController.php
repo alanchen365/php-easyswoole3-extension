@@ -120,29 +120,21 @@ class BaseController extends Controller
 
     function save()
     {
-        try {
-            /** @var $result Result */
-            $result = Di::getInstance()->get(AppConst::DI_RESULT);
+        /** @var $result Result */
+        $result = Di::getInstance()->get(AppConst::DI_RESULT);
 
-            /** 获取所有参数 */
-            $params = $this->getParams();
+        /** 获取所有参数 */
+        $params = $this->getParams();
 
-            /** 保存数据 */
-            $id = $this->getService()->save($params);
+        /** 保存数据 */
+        $id = $this->getService()->save($params);
 
-            /** 查询插入的数据 */
-            $depot = $this->getService()->get(['id' => $id]);
+        /** 查询插入的数据 */
+        $depot = $this->getService()->get(['id' => $id]);
 
-            $result->set(ResultConst::RESULT_DATA_KEY, $depot);
+        $result->set(ResultConst::RESULT_DATA_KEY, $depot);
 
-            Json::success();
-        } catch (\Throwable $throwable) {
-            /** 回滚事物 */
-            Json::fail($throwable, $throwable->getCode(), $throwable->getMessage());
-        } finally {
-            /** 提交事物 */
-            DbManager::getInstance()->commit();
-        }
+        Json::success();
     }
 
     protected function onRequest(?string $action): ?bool
