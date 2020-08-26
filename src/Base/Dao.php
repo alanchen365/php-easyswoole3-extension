@@ -3,7 +3,6 @@
 namespace Es3\Base;
 
 use App\Constant\ResultConst;
-use App\Module\Owtb\Model\DepotModel;
 use Es3\Exception\ErrorException;
 use EasySwoole\Mysqli\QueryBuilder;
 
@@ -24,7 +23,7 @@ trait Dao
             throw new ErrorException(1010, "deleteField()删除参数不能为空");
         }
         $this->model = $this->model::create();
-        $res = $this->model->destroy($data);
+        $res = $this->model->delete($data, true);
         return intval($res);
     }
 

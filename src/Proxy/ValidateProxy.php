@@ -12,6 +12,7 @@ class ValidateProxy
 {
     protected $validate;
 
+
     function __construct($namespace)
     {
         $className = EsUtility::getControllerClassName($namespace);

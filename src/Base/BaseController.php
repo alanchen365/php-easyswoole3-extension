@@ -151,21 +151,21 @@ class BaseController extends Controller
                 $this->setService($service);
             }
 
-            /** dao 代理 */
-            $daoProxy = new DaoProxy(get_called_class());
-            $dao = $daoProxy->getDao();
-
-            if ($dao && $service) {
-                $service->setDao($dao);
-            }
-
-            /** model 代理 */
-            $modelProxy = new ModelProxy(get_called_class());
-            $model = $modelProxy->getModel();
-
-            if ($model && $dao) {
-                $dao->setModel($model);
-            }
+//            /** dao 代理 */
+//            $daoProxy = new DaoProxy(get_called_class());
+//            $dao = $daoProxy->getDao();
+//
+//            if ($dao && $service) {
+//                $service->setDao($dao);
+//            }
+//
+//            /** model 代理 */
+//            $modelProxy = new ModelProxy(get_called_class());
+//            $model = $modelProxy->getModel();
+//
+//            if ($model && $dao) {
+//                $dao->setModel($model);
+//            }
 
             return true;
         } catch (\Throwable $throwable) {
