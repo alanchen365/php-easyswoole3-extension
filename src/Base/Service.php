@@ -48,15 +48,15 @@ trait Service
      */
     public function getLast(string $field = 'id'): ?array
     {
-
+        return $this->dao->getLast($field);
     }
 
     /**
      * 更新全表中某列等于某个值的所有数据
      */
-    public function updateField(array $originalFieldValues, array $updateFieldValues): void
+    public function updateField(array $originalFieldValues, array $updateFieldValues, $allow = false): int
     {
-
+        return $this->dao->updateField($originalFieldValues, $updateFieldValues);
     }
 
     /**
@@ -98,16 +98,16 @@ trait Service
      */
     public function getAutoIncrement(): int
     {
-
+        return $this->dao->getAutoIncrement();
     }
 
     /**
      * 设置自增编号
      * 会自动提交事物
      */
-    public function setAutoIncrement()
+    public function setAutoIncrement(int $autoIncrement): void
     {
-
+        $this->dao->setAutoIncrement($autoIncrement);
     }
 
     /**

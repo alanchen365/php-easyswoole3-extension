@@ -27,6 +27,30 @@ trait Dao
         return intval($res);
     }
 
+    public function updateField(array $originalFieldValues, array $updateFieldValues, $allow = false): int
+    {
+        $originalFieldValues = $this->adjustWhere($originalFieldValues);
+        if (superEmpty($originalFieldValues) || superEmpty($updateFieldValues)) {
+            throw new ErrorException(1011, "updateField()更新参数不能为空");
+        }
+
+        $schemaInfo = $this->model->schemaInfo();
+        $primaryKey = $schemaInfo->getPkFiledName();
+
+        // 不允许更新主键
+        unset($updateFieldValues[$primaryKey]);
+
+        $this->model = $this->model::create();
+        $this->model->update($updateFieldValues, $originalFieldValues, $allow);
+
+        $lastErrorNo = $this->model->lastQueryResult()->getLastErrorNo();
+        if ($lastErrorNo !== 0) {
+            throw new ErrorException(1005, $model->lastQueryResult()->getLastError());
+        }
+
+        return intval($this->model->lastQueryResult()->getAffectedRows());
+    }
+
     public function get(array $where = [], array $field = [])
     {
         $LogicDelete = $this->model->getLogicDelete();
@@ -68,6 +92,26 @@ trait Dao
         }
 
         return intval($this->model->lastQueryResult()->getAffectedRows());
+    }
+
+    public function getLast(string $field = 'id'): ?array
+    {
+        $row = $this->model::create()->order($field, 'DESC')->get();
+        return $row->toArray() ?? [];
+    }
+
+    public function getAutoIncrement(): ?int
+    {
+        $schemaInfo = $this->model->schemaInfo();
+        $res = $this->model::create()->query((new QueryBuilder())->raw("select auto_increment from information_schema.tables where table_name = '" . $schemaInfo->getTable() . "'"));
+
+        return $res[0]['auto_increment'] ?? null;
+    }
+
+    public function setAutoIncrement(int $autoIncrement): void
+    {
+        $schemaInfo = $this->model->schemaInfo();
+        $this->model::create()->query((new QueryBuilder())->raw('alter table ' . $schemaInfo->getTable() . ' auto_increment = ' . $autoIncrement));
     }
 
     public function getAll($where = null, array $page = [], array $orderBys = ['id' => 'DESC'], array $groupBys = [], array $field = [])
