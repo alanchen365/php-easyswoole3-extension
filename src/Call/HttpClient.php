@@ -1,6 +1,6 @@
 <?php
 
-namespace Es3\Base\Call;
+namespace Es3\Call;
 
 class HttpClient extends \EasySwoole\HttpClient\HttpClient
 {
