@@ -80,11 +80,6 @@ trait Service
         return $this->dao->deleteField($data);
     }
 
-    public function query()
-    {
-
-    }
-
     /**
      * 截断表
      */

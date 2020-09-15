@@ -3,6 +3,7 @@
 namespace Es3\Base;
 
 use App\Constant\ResultConst;
+use EasySwoole\ORM\DbManager;
 use Es3\Exception\ErrorException;
 use EasySwoole\Mysqli\QueryBuilder;
 
@@ -119,7 +120,7 @@ trait Dao
         $model = $this->model::create();
 
         $LogicDelete = $this->model->getLogicDelete();
-        $where = array_merge($where, $LogicDelete);
+        $where = array_merge((array)$where, $LogicDelete);
         $where = $this->adjustWhere($where);
 
         if ($page) {
@@ -162,7 +163,7 @@ trait Dao
     /**
      * 清理where条件
      */
-    public function adjustWhere(array $params, $isLogicDelete = true): array
+    public function adjustWhere(array $params = [], $isLogicDelete = true): array
     {
         return $this->model->adjustWhere($params, $isLogicDelete);
     }
@@ -180,5 +181,47 @@ trait Dao
     public function setModel($model): void
     {
         $this->model = $model;
+    }
+
+    public function query(string $sql, ?array $param = [], bool $isOne = false, array $queryOption = [], bool $raw = true, string $connection = 'default'): array
+    {
+        /** 计算总行数查询条件 */
+        $queryOption[] = 'SQL_CALC_FOUND_ROWS';
+
+        $queryBuild = new QueryBuilder();
+        $queryBuild->setQueryOption($queryOption);
+        $queryBuild->raw($sql, $param);
+
+        $results = DbManager::getInstance()->query($queryBuild, $raw, $connection);
+
+        if ($isOne) {
+            $total = 1;
+            $list = $results->getResultOne();
+        } else {
+            $list = $results->getResult();
+            $total = $results->getTotalCount();
+        }
+
+        return [ResultConst::RESULT_LIST_KEY => $list, ResultConst::RESULT_TOTAL_KEY => $total];
+    }
+
+    public function exec(string $sql, ?array $param = [], bool $raw = true, string $connection = 'default'): array
+    {
+        $queryBuild = new QueryBuilder();
+        // 支持参数绑定 第二个参数非必传
+        $queryBuild->raw($sql, $param);
+
+        // 第二个参数 raw  指定true，表示执行原生sql
+        // 第三个参数 connectionName 指定使用的连接名，默认 default
+        $results = DbManager::getInstance()->query($queryBuild, $raw, $connection);
+
+        $lastErrorNo = $results->getLastErrorNo();
+        $lastError = $results->getLastError();
+
+        if ($lastErrorNo !== 0) {
+            throw new ErrorException(1011, $lastError);
+        }
+
+        return [ResultConst::RESULT_AFFECTED_ROWS_KEY => $results->getAffectedRows(), ResultConst::RESULT_LAST_INSERT_ID_KEY => $results->getLastInsertId()];
     }
 }
