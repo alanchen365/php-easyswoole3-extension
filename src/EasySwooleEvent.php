@@ -1,85 +1,86 @@
 <?php
 
-namespace Es3;
+namespace AsaEs;
 
-
-use App\Constant\AppConst;
-use App\Constant\EnvConst;
-use App\LogPusher;
-use EasySwoole\Component\Di;
-use EasySwoole\Console\Console;
-use EasySwoole\EasySwoole\Config;
-use EasySwoole\EasySwoole\Logger;
-use EasySwoole\EasySwoole\ServerManager;
-use EasySwoole\EasySwoole\SysConst;
-use Es3\Handle\HttpThrowable;
-use Es3\ThrowableHandle\Handle;
-use Es3Doc\Es3Doc;
+use App\AppConst\AppInfo;
+use AsaEs\Config\Router;
+use AsaEs\Exception\Service\MiddlewareException;
+use AsaEs\Exception\Service\SignException;
+use AsaEs\Exception\SystemException;
+use AsaEs\Logger\AccessLogger;
+use AsaEs\Logger\FileLogger;
+use AsaEs\Middleware\AccessLog;
+use AsaEs\Middleware\Dispatch;
+use AsaEs\Middleware\EmptyParamFilter;
+use AsaEs\Process\Inotify;
+use AsaEs\Process\Timer;
+use AsaEs\Router\HttpRouter;
+use AsaEs\Utility\ArrayUtility;
+use EasySwoole\Core\Component\Crontab\CronTab;
+use EasySwoole\Core\Component\Di;
+use EasySwoole\Core\Component\Logger;
+use EasySwoole\Core\Component\SysConst;
+use EasySwoole\Core\Http\Message\Status;
+use EasySwoole\Core\Swoole\EventRegister;
+use EasySwoole\Core\Swoole\Process\ProcessManager;
+use EasySwoole\Core\Swoole\ServerManager;
+use \EasySwoole\Core\Http\Request;
+use \EasySwoole\Core\Http\Response;
 
 class EasySwooleEvent
 {
-    public static function initialize(): void
-    {
-        date_default_timezone_set('Asia/Shanghai');
-
-        /** 加载配置文件 */
-        \Es3\AutoLoad\Config::getInstance()->autoLoad();
-
-        /** 路由初始化 */
-        \Es3\AutoLoad\Router::getInstance()->autoLoad();
-
-        /** 配置控制器命名空间 */
-        Di::getInstance()->set(SysConst::HTTP_CONTROLLER_NAMESPACE, 'App\\Controller\\');
-
-        /** 注入http异常处理 */
-        Di::getInstance()->set(SysConst::HTTP_EXCEPTION_HANDLER, [HttpThrowable::class, 'run']);
-
-        /** 事件注册 */
-        \Es3\AutoLoad\Event::getInstance()->autoLoad();
-        
-        /** 文档生成 */
-        Es3Doc::getInstance()->generator();
-
-        /** 目录不存在就创建 */
-        is_dir(EnvConst::PATH_LOG) ? null : mkdir(EnvConst::PATH_LOG, 0777);
-        is_dir(EnvConst::PATH_TEMP) ? null : mkdir(EnvConst::PATH_TEMP, 0777);
-    }
-
     public static function frameInitialize(): void
     {
+        // 时区设置
+        date_default_timezone_set('Asia/Shanghai');
+        // 注册路由
+        if (Config::getInstance()->getConf('ROUTER')) {
+            HttpRouter::getInstance()->registered();
+        }
+        // 注册配置文件
+        Config::getInstance()->register();
+        // 注册异常
+        Di::getInstance()->set(SysConst::HTTP_EXCEPTION_HANDLER, SystemException::class);
 
+        // 创建日志目录
+        $logDir = Config::getInstance()->getConf('LOG_DIR');
+        if(!is_dir($logDir)){
+            mkdir($logDir,0777,true);
+        }
+
+        // 创建tmp目录
+        $tmpDir = Config::getInstance()->getConf('TEMP_DIR');
+        if(!is_dir($tmpDir)){
+            mkdir($tmpDir,0777,true);
+        }
     }
 
-    public static function mainServerCreate(): void
+    public static function mainServerCreate(ServerManager $server, EventRegister $register): void
     {
-        $consoleName = EnvConst::SERVICE_NAME . '.console';
-        ServerManager::getInstance()->addServer($consoleName, EnvConst::CONSOLE_PORT, SWOOLE_TCP, AppConst::SERVER_HOST, [
-            'open_eof_check' => false
-        ]);
+        // 服务热重启
+        ProcessManager::getInstance()->addProcess(AsaEsConst::PROCESS_AUTO_RELOAD, Inotify::class);
+        // 进程批量注入
+        \AsaEs\Router\ProcessRoute::run();
+        // 注入定时任务
+        \AsaEs\Router\CrontabRoute::run();
+    }
 
-        $consoleTcp = ServerManager::getInstance()->getSwooleServer($consoleName);
-        $console = new Console($consoleName, EnvConst::CONSOLE_AUTH);
+    public static function onRequest(Request $request, Response $response): void
+    {
+        try{
+            // token动态注入
+            Di::getInstance()->set(AsaEsConst::DI_REQUEST_OBJ, new \AsaEs\Utility\Request($request));
+            // 系统中间件注入
+            Dispatch::run($request, $response);
+            // 记录访问时间
+            $request->withAttribute(AsaEsConst::LOG_ACCESS, microtime(true));
+        }catch (\Throwable $throwable){
+            throw new MiddlewareException($throwable->getCode(),$throwable->getMessage());
+        }
+    }
 
-        /*
-    * 注册日志模块
-    */
-        $console->moduleContainer()->set(new LogPusher());
-        $console->protocolSet($consoleTcp)->attachToServer(ServerManager::getInstance()->getSwooleServer());
-        /*
-         * 给es的日志推送加上hook
-         */
-        Logger::getInstance()->onLog()->set('remotePush', function ($msg, $logLevel, $category) use ($console) {
-
-            foreach ($console->allFd() as $item) {
-                $console->send($item['fd'], $msg);
-            }
-//
-//            if (Config::getInstance()->getConf('LOG_DIR')) {
-//                /*
-//                 * 可以在 LogPusher 模型的exec方法中，对loglevel，category进行设置，从而实现对日志等级，和分类的过滤推送
-//                 */
-//
-//            }
-        });
+    public static function afterAction(Request $request, Response $response): void
+    {
+        AccessLog::getInstance()->handle($request,$response);
     }
 }
