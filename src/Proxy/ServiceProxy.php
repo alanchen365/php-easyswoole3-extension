@@ -2,14 +2,15 @@
 
 namespace Es3\Proxy;
 
-
 use App\Constant\AppConst;
+use EasySwoole\Component\Singleton;
 use EasySwoole\EasySwoole\Logger;
+use Es3\Base\Service;
 use Es3\EsUtility;
 
-class DaoProxy
+class ServiceProxy
 {
-    protected $dao;
+    protected $service;
 
     function __construct($namespace)
     {
@@ -17,25 +18,22 @@ class DaoProxy
         $moduleName = EsUtility::getControllerModuleName($namespace);
 
         $moduleDirName = AppConst::ES_DIRECTORY_MODULE_NAME;
-        $namespace = "App\\{$moduleDirName}\\{$moduleName}\\Dao\\{$className}Dao";
+        $namespace = "App\\{$moduleDirName}\\{$moduleName}\\Service\\{$className}Service";
 
         if ($moduleName == AppConst::ES_DIRECTORY_CONTROLLER_NAME) {
             return;
         }
 
-        if (class_exists($namespace)) {
-            $this->dao = new $namespace();
-        }else {
-            $msg = 'dao 加载失败 : ' . $namespace;
+        if (class_exists($namespace) && $moduleDirName != 'Controller') {
+            $this->service = new $namespace();
+        } else {
+            $msg = 'service 加载失败 : ' . $namespace;
             Logger::getInstance()->console($msg, 3, 'proxy');
         }
     }
 
-    /**
-     * @return mixed
-     */
-    public function getDao()
+    public function getService()
     {
-        return $this->dao;
+        return $this->service;
     }
 }
