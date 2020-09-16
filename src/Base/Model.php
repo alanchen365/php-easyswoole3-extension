@@ -4,6 +4,8 @@ namespace Es3\Base;
 
 use App\Constant\AppConst;
 use EasySwoole\ORM\AbstractModel;
+use EasySwoole\ORM\Db\ClientInterface;
+use EasySwoole\ORM\DbManager;
 use EasySwoole\ORM\Utility\Schema\Table;
 use Es3\EsUtility;
 
@@ -45,7 +47,7 @@ class Model extends AbstractModel
                 return [$field => $value];
             }
         }
-        
+
         return [];
     }
 
@@ -64,5 +66,18 @@ class Model extends AbstractModel
         }
 
         return $count;
+    }
+
+    /**
+     * 重写model中的自动开启事物
+     */
+    public function insertAll($data, ?string $column = ''): array
+    {
+        $isTransaction = DbManager::getInstance()->invoke(function (ClientInterface $client) {
+            return DbManager::isInTransaction($client);
+        });
+
+        $result = parent::saveAll($data, false, !$isTransaction);
+        return $column ? array_column($result, 'id') : [];
     }
 }

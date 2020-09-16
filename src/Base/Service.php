@@ -66,9 +66,9 @@ trait Service
      * @param bool $transaction 是否开启事务，默认为true，
      * @param string $retrunField 返回字段
      */
-    public function insertAll(array $data, $replace = true, $transaction = true, $returnField = 'id'): array
+    public function insertAll(array $data, ?string $column = ''): array
     {
-        return $this->dao->insertAll($data, $replace, $transaction, $returnField);
+        return $this->dao->insertAll($data, $column);
     }
 
     /**

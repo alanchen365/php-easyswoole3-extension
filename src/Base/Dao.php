@@ -3,6 +3,7 @@
 namespace Es3\Base;
 
 use App\Constant\ResultConst;
+use EasySwoole\ORM\Db\ClientInterface;
 use EasySwoole\ORM\DbManager;
 use Es3\Exception\ErrorException;
 use EasySwoole\Mysqli\QueryBuilder;
@@ -152,12 +153,14 @@ trait Dao
         $this->model->query((new QueryBuilder())->raw('TRUNCATE TABLE ' . $schemaInfo->getTable()));
     }
 
-    public function insertAll(array $data, $replace = true, $transaction = true, $returnField = 'id'): array
+    public function insertAll(array $data, ?string $column = ''): array
     {
+        /** 当前是否开启事物 */
         $this->model = $this->model::create();
-        $res = $this->model->saveAll($data, $replace, $transaction);
-        $res = json_decode(json_encode($res), true);
-        return [$returnField => array_column($res, $returnField)];
+
+        $result = $this->model->insertAll($data, $column);
+
+        return $result;
     }
 
     /**
