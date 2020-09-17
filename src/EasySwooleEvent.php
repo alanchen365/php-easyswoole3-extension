@@ -12,6 +12,8 @@ use EasySwoole\EasySwoole\Config;
 use EasySwoole\EasySwoole\Logger;
 use EasySwoole\EasySwoole\ServerManager;
 use EasySwoole\EasySwoole\SysConst;
+use EasySwoole\Http\Request;
+use EasySwoole\Http\Response;
 use Es3\Handle\HttpThrowable;
 use Es3\ThrowableHandle\Handle;
 use Es3Doc\Es3Doc;
@@ -36,7 +38,7 @@ class EasySwooleEvent
 
         /** 事件注册 */
         \Es3\AutoLoad\Event::getInstance()->autoLoad();
-        
+
         /** 文档生成 */
         Es3Doc::getInstance()->generator();
 
@@ -81,5 +83,10 @@ class EasySwooleEvent
 //
 //            }
         });
+    }
+
+    public static function onRequest(Request $request, Response $response)
+    {
+        Middleware::run($request, $response);
     }
 }
