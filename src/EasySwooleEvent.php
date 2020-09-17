@@ -40,7 +40,7 @@ class EasySwooleEvent
         \Es3\AutoLoad\Event::getInstance()->autoLoad();
 
         /** 文档生成 */
-        Es3Doc::getInstance()->generator();
+//        Es3Doc::getInstance()->generator();
 
         /** 目录不存在就创建 */
         is_dir(EnvConst::PATH_LOG) ? null : mkdir(EnvConst::PATH_LOG, 0777);
