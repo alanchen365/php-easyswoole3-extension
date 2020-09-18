@@ -129,14 +129,14 @@ trait Dao
         }
 
         if ($orderBys) {
-            foreach ($orderBys as $field => $orderBy) {
-                $model->order($field, $orderBy);
+            foreach ($orderBys as $key => $orderBy) {
+                $model->order($key, $orderBy);
             }
         }
 
         if ($groupBys) {
-            foreach ($groupBys as $field) {
-                $model->group($field);
+            foreach ($groupBys as $key => $groupBy) {
+                $model->group($groupBy);
             }
         }
 
