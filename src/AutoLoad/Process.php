@@ -51,11 +51,11 @@ class Process
                         \EasySwoole\Component\Process\Manager::getInstance()->addProcess(new $class($conf));
 
                         echo  Utility::displayItem('Process',$class);
+                        echo "\n";
                     }
                 }
             }
 
-            echo "\n";
         } catch (\Throwable $throwable) {
             echo 'Process Initialize Fail :' . $throwable->getMessage();
         }
