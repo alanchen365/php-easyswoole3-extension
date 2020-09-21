@@ -27,7 +27,7 @@ class Policy
 
         echo Utility::displayItem($isAuthKey, json_encode($policyConf));
         echo "\n";
-        
+
         return $policy;
     }
 

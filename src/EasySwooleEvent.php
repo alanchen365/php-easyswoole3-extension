@@ -43,8 +43,9 @@ class EasySwooleEvent
 //        Es3Doc::getInstance()->generator();
 
         /** 目录不存在就创建 */
-        is_dir(EnvConst::PATH_LOG) ? null : mkdir(EnvConst::PATH_LOG, 0777);
-        is_dir(EnvConst::PATH_TEMP) ? null : mkdir(EnvConst::PATH_TEMP, 0777);
+        is_dir(EnvConst::PATH_LOG) ? null : mkdir(EnvConst::PATH_LOG, 0777, true);
+        is_dir(EnvConst::PATH_TEMP) ? null : mkdir(EnvConst::PATH_TEMP, 0777, true);
+        is_dir(EnvConst::PATH_LOCK) ? null : mkdir(EnvConst::PATH_LOCK, 0777, true);
     }
 
     public static function frameInitialize(): void
