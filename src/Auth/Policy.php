@@ -50,6 +50,6 @@ class Policy
             $isAuth = false;
         }
 
-        return $isAuth;
+        return !$isAuth;
     }
 }
