@@ -14,23 +14,18 @@ use Es3\Exception\InfoException;
  */
 class Jwt
 {
-    public function decode(?string $identity): array
+    public function decode(?string $identity, ?string $key, ?string $alg): array
     {
         try {
-            $jwtConf = EsConfig::getInstance()->getConf('jwt', true);
-            $secretKey = $jwtConf['key'] ?? null;
-            $alg = $jwtConf['alg'] ?? null;
-
             if (superEmpty($identity)) {
                 throw new InfoException(1008, '身份信息缺失');
             }
 
-            if (superEmpty($jwtConf) || superEmpty($secretKey)) {
+            if (superEmpty($key) || superEmpty($alg)) {
                 throw new InfoException(1008, '关键身份信息缺失');
             }
 
-            $token = \Firebase\JWT\JWT::decode($identity, $secretKey, [$alg]);
-
+            $token = \Firebase\JWT\JWT::decode($identity, $key, [$alg]);
             return (array)$token;
         } catch (\Throwable $throwable) {
             throw $throwable;

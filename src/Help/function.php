@@ -12,7 +12,7 @@ function isDev(): bool
     return $env === strtolower('PRODUCTION') ? false : true;
 }
 
-function config($keyPath = '', $env = false): string
+function config($keyPath = '', $env = false)
 {
     return \Es3\EsConfig::getInstance()->getConf($keyPath, $env);
 }
