@@ -32,24 +32,20 @@ class Jwt
         }
     }
 
-    public static function encode(array $data = []): string
+    public function encode(array $data = [], ?string $key, ?string $alg): string
     {
         try {
-            $jwtConf = EsConfig::getInstance()->getConf('jwt', true);
-            $secretKey = $jwtConf['key'] ?? null;
-            $alg = $jwtConf['alg'] ?? null;
-
-            if (superEmpty($jwtConf) || superEmpty($secretKey)) {
+            if (superEmpty($key) || superEmpty($alg)) {
                 throw new InfoException(1008, '关键身份信息缺失');
             }
 
-            $token = JWT::encode($data, $secretKey, $alg);
+            $identity = \Firebase\JWT\JWT::encode($data, $key, $alg);
 
-            if (superEmpty($token)) {
+            if (superEmpty($identity)) {
                 throw new InfoException(1008, '身份生成失败');
             }
 
-            return strval($token);
+            return strval($identity);
         } catch (\Exception $e) {
             Logger::getInstance()->notice('鉴权错误 : ' . $throwable->getMessage(), 'auth');
             throw new SignException($e->getCode(), $e->getMessage());
