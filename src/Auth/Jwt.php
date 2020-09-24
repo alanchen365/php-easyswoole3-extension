@@ -5,7 +5,9 @@ namespace Es3\Auth;
 use App\Constant\AppConst;
 use EasySwoole\EasySwoole\Logger;
 use Es3\EsConfig;
+use Es3\Exception\ErrorException;
 use Es3\Exception\InfoException;
+use Es3\Exception\WaringException;
 
 /**
  * 配置自动加载
@@ -46,9 +48,9 @@ class Jwt
             }
 
             return strval($identity);
-        } catch (\Exception $e) {
-            Logger::getInstance()->notice('鉴权错误 : ' . $throwable->getMessage(), 'auth');
-            throw new SignException($e->getCode(), $e->getMessage());
+        } catch (\Exception $throwable) {
+            Logger::getInstance()->notice('身份生成失败 : ' . $throwable->getMessage(), 'auth');
+            throw new ErrorException($throwable->getCode(), $throwable->getMessage());
         }
     }
 }
