@@ -21,7 +21,7 @@ use EasySwoole\ORM\Db\Connection;
 use EasySwoole\ORM\DbManager;
 use EasySwoole\Pool\Exception\Exception;
 use EasySwoole\Template\Render;
-use Es3\Auth\Policy;
+use Es3\Policy;
 use Es3\Exception\ErrorException;
 use Es3\Handle\HttpThrowable;
 use Es3\Output\Result;

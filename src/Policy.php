@@ -1,6 +1,6 @@
 <?php
 
-namespace Es3\Auth;
+namespace Es3;
 
 
 use App\Constant\AppConst;
@@ -21,6 +21,8 @@ class Policy
         $isAuthKey = 'policy.' . AppConst::CONF_IS_AUTH;
         $policyConf = config($isAuthKey, true);
         foreach ($policyConf as $key => $conf) {
+
+            var_dump($key, $conf);
             $policy->addPath($key, $conf);
         }
 
