@@ -10,7 +10,9 @@ use AsaEs\Logger\FileLogger;
 use EasySwoole\Config;
 use EasySwoole\Component\Di;
 use EasySwoole\Core\Swoole\Task\TaskManager;
+use EasySwoole\EasySwoole\Logger;
 use EasySwoole\Http\Response;
+use EasySwoole\Log\LoggerInterface;
 use Es3\EsConfig;
 use Es3\Output\Result;
 
@@ -64,6 +66,14 @@ class Json
 
         $data = $result->toArray();
 
+        /** 记录请求log */
+        $save = [
+            'request' => requestLog(),
+            'response' => ['response_code' => $code, 'response_msg' => $msg]
+        ];
+
+        Logger::getInstance()->log(json_encode($save), LoggerInterface::LOG_LEVEL_INFO, AppConst::LOG_NAME_REQUEST_RESPONSE);
+        
         $response->withHeader('Content-type', 'application/json;charset=utf-8');
         $response->write(json_encode($data));
         $response->end();

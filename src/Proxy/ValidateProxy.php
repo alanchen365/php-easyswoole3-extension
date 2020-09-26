@@ -6,6 +6,7 @@ use App\Constant\AppConst;
 use EasySwoole\EasySwoole\Logger;
 use EasySwoole\Validate\Validate;
 use Es3\EsUtility;
+use Es3\Exception\InfoException;
 use Es3\Exception\WaringException;
 
 class ValidateProxy
@@ -47,10 +48,10 @@ class ValidateProxy
             if (!$validate instanceof Validate) {
                 return;
             }
-
+            
             /** 全局调用验证器 */
             if ($validate->validate($params) == false) {
-                throw new WaringException(1002, "{$validate->getError()->getField()}@{$validate->getError()->getFieldAlias()}:{$validate->getError()->getErrorRuleMsg()}");
+                throw new InfoException(1002, "{$validate->getError()->getField()}@{$validate->getError()->getFieldAlias()}:{$validate->getError()->getErrorRuleMsg()}");
             }
         }
     }

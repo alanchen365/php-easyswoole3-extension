@@ -4,7 +4,6 @@ namespace Es3\Auth;
 
 use App\Constant\AppConst;
 use EasySwoole\EasySwoole\Logger;
-use Es3\EsConfig;
 use Es3\Exception\ErrorException;
 use Es3\Exception\InfoException;
 use Es3\Exception\WaringException;

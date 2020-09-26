@@ -2,11 +2,13 @@
 
 namespace Es3\Handle;
 
+use App\Constant\EnvConst;
 use EasySwoole\Http\Request;
 use EasySwoole\Http\Response;
 use Es3\Output\Json;
 
 use EasySwoole\Log\LoggerInterface;
+use Es3\Trace;
 use Es3\Utility\File;
 
 class LoggerHandel implements LoggerInterface
@@ -24,7 +26,9 @@ class LoggerHandel implements LoggerInterface
     function log(?string $msg, int $logLevel = self::LOG_LEVEL_INFO, string $category = 'debug'): string
     {
         $date = date('Y-m-d H:i:s');
-        $levelStr = $this->levelMap($logLevel);
+        $category = strtolower($category);
+        $project = strtolower(EnvConst::SERVICE_NAME);
+        $levelStr = strtolower($this->levelMap($logLevel));
         $logPath = "{$this->logDir}/{$category}/{$levelStr}";
 
         clearstatcache();
@@ -33,7 +37,10 @@ class LoggerHandel implements LoggerInterface
         $fileDate = date('Ymd', time());
         $filePath = "{$logPath}/{$fileDate}.log";
 
-        $str = "[{$date}][{$category}][{$levelStr}] : [{$msg}]\n";
+        /** 是否传递分类的特殊处理 */
+        $traceCode = Trace::getRequestId();
+        $str = "[{$project}][{$date}][{$traceCode}][{$category}][{$levelStr}] : [{$msg}]\n";
+
         file_put_contents($filePath, "{$str}", FILE_APPEND | LOCK_EX);
         return $str;
     }
@@ -46,7 +53,7 @@ class LoggerHandel implements LoggerInterface
         fwrite(STDOUT, $temp);
     }
 
-    private function levelMap(int $level)
+    private function levelMap(int $level): string
     {
         switch ($level) {
             case self::LOG_LEVEL_INFO:

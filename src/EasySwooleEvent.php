@@ -16,6 +16,7 @@ use EasySwoole\EasySwoole\Swoole\EventRegister;
 use EasySwoole\EasySwoole\SysConst;
 use EasySwoole\Http\Request;
 use EasySwoole\Http\Response;
+use EasySwoole\Log\LoggerInterface;
 use EasySwoole\ORM\Db\Connection;
 use EasySwoole\ORM\DbManager;
 use EasySwoole\Pool\Exception\Exception;
@@ -49,23 +50,37 @@ class EasySwooleEvent
         /** 事件注册 */
         \Es3\AutoLoad\Event::getInstance()->autoLoad();
 
-        /** 文档生成 */
-//        Es3Doc::getInstance()->generator();
-
         /** 目录不存在就创建 */
         is_dir(EnvConst::PATH_LOG) ? null : mkdir(EnvConst::PATH_LOG, 0777, true);
         is_dir(EnvConst::PATH_TEMP) ? null : mkdir(EnvConst::PATH_TEMP, 0777, true);
         is_dir(EnvConst::PATH_LOCK) ? null : mkdir(EnvConst::PATH_LOCK, 0777, true);
 
-        /** ORM 注入 */
-//        $mysqlConf = EsConfig::getInstance()->getConf('mysql', true);
-//        $config = new \EasySwoole\ORM\Db\Config($mysqlConf);
-//        DbManager::getInstance()->addConnection(new Connection($config));
+        /** ORM  */
+        $mysqlConf = config('mysql', true);
+        if (!superEmpty($mysqlConf)) {
+
+            echo Utility::displayItem('MysqlConf', json_encode($mysqlConf));
+            echo "\n";
+
+            $config = new \EasySwoole\ORM\Db\Config($mysqlConf);
+            DbManager::getInstance()->addConnection(new Connection($config));
+
+            DbManager::getInstance()->onQuery(function ($res, $builder, $start) {
+
+                $nowDate = date('Y-m-d H:i:s', time());
+
+                /** 打印日志 */
+                echo "\n====================  {$nowDate} ====================\n";
+                echo $builder->getLastQuery() . "\n";
+                echo "==================== {$nowDate} ====================\n";
+
+                Logger::getInstance()->log($builder->getLastQuery(), LoggerInterface::LOG_LEVEL_INFO, 'query');
+            });
+        }
     }
 
     public static function frameInitialize(): void
     {
-
     }
 
     public static function mainServerCreate(EventRegister $register): void
@@ -84,14 +99,11 @@ class EasySwooleEvent
         $consoleTcp = ServerManager::getInstance()->getSwooleServer($consoleName);
         $console = new Console($consoleName, EnvConst::CONSOLE_AUTH);
 
-        /*
-         * 注册日志模块
-         */
+        /* 注册日志模块 */
         $console->moduleContainer()->set(new LogPusher());
         $console->protocolSet($consoleTcp)->attachToServer(ServerManager::getInstance()->getSwooleServer());
-        /*
-         * 给es的日志推送加上hook
-         */
+
+        /* 给es的日志推送加上hook */
         Logger::getInstance()->onLog()->set('remotePush', function ($msg, $logLevel, $category) use ($console) {
 
             foreach ($console->allFd() as $item) {
@@ -113,6 +125,7 @@ class EasySwooleEvent
         Render::getInstance()->getConfig()->setTempDir(EASYSWOOLE_TEMP_DIR);
         Render::getInstance()->attachServer(ServerManager::getInstance()->getSwooleServer());
 
+        /** 热加载 */
         if (isDev()) {
             $hotReloadOptions = new \EasySwoole\HotReload\HotReloadOptions;
             $hotReload = new \EasySwoole\HotReload\HotReload($hotReloadOptions);
@@ -122,41 +135,14 @@ class EasySwooleEvent
             $hotReload->attachToServer($server);
         }
 
-        /** 连接mysql */
-        $mysqlConf = EsConfig::getInstance()->getConf('mysql', true);
-        if (!superEmpty($mysqlConf)) {
-
-            echo Utility::displayItem('MysqlConf', json_encode($mysqlConf));
-            echo "\n";
-
-            $mysqlConfig = new \EasySwoole\ORM\Db\Config($mysqlConf);
-            $connection = new Connection($mysqlConfig);
-            DbManager::getInstance()->addConnection($connection);
-            DbManager::getInstance()->onQuery(function ($res, $builder, $start) {
-
-                $nowDate = date('Y-m-d H:i:s', time());
-
-                /** 打印日志 */
-                echo "\n====================  {$nowDate} ====================\n";
-                echo $builder->getLastQuery() . "\n";
-                echo "==================== {$nowDate} ====================\n";
-            });
-
-            $register->add($register::onWorkerStart, function () {
-                //链接预热
-                DbManager::getInstance()->getConnection()->getClientPool()->keepMin();
-            });
-        }
-
         /** 连接redis */
-        $redisConf = EsConfig::getInstance()->getConf('redis', true);
+        $redisConf = config('redis', true);
         if (superEmpty(!$redisConf)) {
             try {
                 echo Utility::displayItem('RedisConf', json_encode($redisConf));
                 echo "\n";
 
                 $redisConf = new \EasySwoole\Redis\Config\RedisConfig($redisConf);
-
                 \EasySwoole\RedisPool\Redis::getInstance()->register(EnvConst::REDIS_KEY, $redisConf);
             } catch (Exception $e) {
                 throw new ErrorException(1002, 'redis连接失败');
@@ -173,6 +159,13 @@ class EasySwooleEvent
         /** 请求唯一标识  */
         Trace::createRequestId();
 
-        Middleware::run($request, $response);
+        /** 中间件 */
+        Middleware::onRequest($request, $response);
+    }
+
+    public static function afterRequest(Request $request, Response $response): void
+    {
+        /** 中间件 */
+        Middleware::afterRequest($request, $response);
     }
 }

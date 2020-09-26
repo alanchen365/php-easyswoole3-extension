@@ -9,7 +9,12 @@ class ErrorException extends BaseException
     public function __construct(int $code, string $msg = '', \Throwable $previous = null)
     {
         /** 录入日志 */
-        Logger::getInstance()->error(json_encode(['code' => $code, 'msg' => $msg]), 'exception');
+        $data = ['code' => $code, 'msg' => $msg];
+        if (isHttp()) {
+            $data['request'] = requestLog();
+        }
+        
+        Logger::getInstance()->error(json_encode($data), 'exception');
         parent::__construct($code, $msg, $previous);
     }
 }

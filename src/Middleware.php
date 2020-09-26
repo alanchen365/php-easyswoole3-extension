@@ -2,24 +2,43 @@
 
 namespace Es3;
 
+use App\Constant\AppConst;
+use AsaEs\AsaEsConst;
+use EasySwoole\Component\Di;
+use EasySwoole\EasySwoole\Logger;
 use EasySwoole\Http\Request;
 use \EasySwoole\Http\Response;
 
+use EasySwoole\Log\LoggerInterface;
+use Es3\Handle\LoggerHandel;
 use Es3\Middleware\CrossDomain;
 
 class Middleware
 {
-    public static function run(Request $request, Response $response)
+    public static function onRequest(Request $request, Response $response)
     {
-        $selef = new self();
+        $request->withAttribute('access_log', microtime(true));
+
+        $self = new self();
         /** 跨域注入 */
-        $selef->CrossDomain($request, $response);
+        $self->CrossDomain($request, $response);
 
         /** 空参数过滤 */
-        $selef->clearEmptyParams($request, $response);
+        $self->clearEmptyParams($request, $response);
+
+        /** 写入请求日主 */
+        $self->access($request, $response);
     }
 
-    private function CrossDomain(Request $request, $response)
+    public static function afterRequest(Request $request, Response $response)
+    {
+        $self = new self();
+
+        /**slog */
+        $self->slog($request, $response);
+    }
+
+    private function crossDomain(Request $request, $response)
     {
         // 任何环境都不做限制
         $response->withHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, system_id, app_code, token, identity');
@@ -54,7 +73,34 @@ class Middleware
                 unset($params[$key]);
             }
         }
-        
+
         $request->withQueryParams($params);
+    }
+
+    private function slog(Request $request, $response)
+    {
+        /** 从请求里获取之前增加的时间戳 */
+        $reqTime = $request->getAttribute('access_log');
+
+        /** 计算一下运行时间  */
+        $runTime = round(microtime(true) - $reqTime, 5);
+
+        /** 拼接一个简单的日志 */
+        $runTime = round(floatval($runTime * 1000), 0);
+        $accessLog = $request->getUri() . ' | ' . clientIp() . ' | ' . $runTime . ' ms | ' . $request->getHeader('user-agent')[0];
+
+        /** 正常日志 */
+        $log = Logger::getInstance()->log($accessLog, LoggerInterface::LOG_LEVEL_INFO, 'access_log');
+
+        /** 慢日志 */
+        if ($runTime > round(AppConst::LOG_SLOG_SECONDS * 1000, 0)) {
+            $log = Logger::getInstance()->log($accessLog, LoggerInterface::LOG_LEVEL_WARNING, 'slog');
+        }
+    }
+
+    private function access(Request $request, $response)
+    {
+        $accessLog = $request->getUri() . ' | ' . clientIp() . ' | ' . $request->getHeader('user-agent')[0];
+        Logger::getInstance()->log($accessLog, LoggerInterface::LOG_LEVEL_INFO, 'access_log');
     }
 }

@@ -10,7 +10,6 @@ use EasySwoole\EasySwoole\Command\Utility;
 use EasySwoole\FastCache\Cache;
 use EasySwoole\Http\Request;
 use EasySwoole\Policy\PolicyNode;
-use Es3\EsConfig;
 
 class Policy
 {
@@ -20,7 +19,7 @@ class Policy
     {
         $policy = new \EasySwoole\Policy\Policy();
         $isAuthKey = 'policy.' . AppConst::CONF_IS_AUTH;
-        $policyConf = EsConfig::getInstance()->getConf($isAuthKey, true);
+        $policyConf = config($isAuthKey, true);
         foreach ($policyConf as $key => $conf) {
             $policy->addPath($key, $conf);
         }
