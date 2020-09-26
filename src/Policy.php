@@ -22,7 +22,6 @@ class Policy
         $policyConf = config($isAuthKey, true);
         foreach ($policyConf as $key => $conf) {
 
-            var_dump($key, $conf);
             $policy->addPath($key, $conf);
         }
 
