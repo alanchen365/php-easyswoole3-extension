@@ -189,7 +189,9 @@ trait Dao
     public function query(string $sql, ?array $param = [], bool $isOne = false, array $queryOption = [], bool $raw = true, string $connection = 'default'): array
     {
         /** 计算总行数查询条件 */
-        $queryOption[] = 'SQL_CALC_FOUND_ROWS';
+        if (strstr($sql, 'SQL_CALC_FOUND_ROWS')) {
+            $queryOption[] = 'SQL_CALC_FOUND_ROWS';
+        }
 
         $queryBuild = new QueryBuilder();
         $queryBuild->setQueryOption($queryOption);
@@ -205,7 +207,11 @@ trait Dao
             $total = $results->getTotalCount();
         }
 
-        return [ResultConst::RESULT_LIST_KEY => $list, ResultConst::RESULT_TOTAL_KEY => $total];
+        if (strstr($sql, 'SQL_CALC_FOUND_ROWS')) {
+            return [ResultConst::RESULT_LIST_KEY => $list, ResultConst::RESULT_TOTAL_KEY => $total];
+        }
+
+        return $list;
     }
 
     public function exec(string $sql, ?array $param = [], bool $raw = true, string $connection = 'default'): array
