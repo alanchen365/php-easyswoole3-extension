@@ -11,7 +11,6 @@ use \EasySwoole\Http\Response;
 
 use EasySwoole\Log\LoggerInterface;
 use Es3\Handle\LoggerHandel;
-use Es3\Middleware\CrossDomain;
 
 class Middleware
 {
@@ -21,7 +20,7 @@ class Middleware
 
         $self = new self();
         /** 跨域注入 */
-        $self->CrossDomain($request, $response);
+        $self->crossDomain($request, $response);
 
         /** 空参数过滤 */
         $self->clearEmptyParams($request, $response);
@@ -41,7 +40,13 @@ class Middleware
     private function crossDomain(Request $request, $response)
     {
         // 任何环境都不做限制
-        $response->withHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, system_id, app_code, token, identity');
+        $headers = 'Content-Type, Authorization, X-Requested-With, token, identity';
+        $allowAccessControl = AppConst::HEADERS_ALLOW_ACCESS_CONTROL;
+        if (!superEmpty($allowAccessControl)) {
+            $headers = $headers . ' , ' . implode($allowAccessControl, ' , ');
+        }
+        
+        $response->withHeader('Access-Control-Allow-Headers', $headers);
 
         /** 生产情况的跨域 由 运维处理 */
         if (!isProduction()) {
