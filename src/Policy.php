@@ -18,7 +18,7 @@ class Policy
     public function initialize(): \EasySwoole\Policy\Policy
     {
         $policy = new \EasySwoole\Policy\Policy();
-        $isAuthKey = 'policy.' . AppConst::CONF_IS_AUTH;
+        $isAuthKey = strtolower('policy.' . AppConst::POLICY_CONF_IS_AUTH);
         $policyConf = config($isAuthKey, true);
         foreach ($policyConf as $key => $conf) {
 

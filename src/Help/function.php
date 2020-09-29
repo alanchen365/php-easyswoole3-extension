@@ -106,10 +106,10 @@ function requestLog(): ?array
 
 function setIdentity($identity): void
 {
-    Di::getInstance()->set(AppConst::AUTH_HEADER, $identity);
+    Di::getInstance()->set(AppConst::HEADER_AUTH, $identity);
 }
 
 function identity()
 {
-    return Di::getInstance()->get(AppConst::AUTH_HEADER);
+    return Di::getInstance()->get(AppConst::HEADER_AUTH);
 }

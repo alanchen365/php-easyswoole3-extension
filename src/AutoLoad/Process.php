@@ -4,6 +4,7 @@ namespace Es3\AutoLoad;
 
 use App\Constant\AppConst;
 use App\Constant\EnvConst;
+use App\Constant\EsConst;
 use EasySwoole\Component\Singleton;
 use EasySwoole\EasySwoole\Command\Utility;
 use EasySwoole\EasySwoole\Logger;
@@ -17,12 +18,12 @@ class Process
     {
         try {
             $crontabLoads = [];
-            $path = EASYSWOOLE_ROOT . '/' . AppConst::ES_DIRECTORY_APP_NAME . '/' . AppConst::ES_DIRECTORY_MODULE_NAME . '/';
+            $path = EASYSWOOLE_ROOT . '/' . EsConst::ES_DIRECTORY_APP_NAME . '/' . EsConst::ES_DIRECTORY_MODULE_NAME . '/';
             $modules = EsUtility::sancDir($path);
 
             foreach ($modules as $module) {
 
-                $processPath = $path . $module . '/' . AppConst::ES_DIRECTORY_PROCESS_NAME . '/';
+                $processPath = $path . $module . '/' . EsConst::ES_DIRECTORY_PROCESS_NAME . '/';
                 $processFiles = EsUtility::sancDir($processPath);
 
                 foreach ($processFiles as $key => $processFile) {
@@ -36,7 +37,7 @@ class Process
                     $className = basename($autoLooadFile, '.php');
 
                     /** 加载定时任务 */
-                    $class = "\\" . AppConst::ES_DIRECTORY_APP_NAME . "\\" . AppConst::ES_DIRECTORY_MODULE_NAME . "\\" . $module . "\\" . AppConst::ES_DIRECTORY_PROCESS_NAME . "\\" . $className;
+                    $class = "\\" . EsConst::ES_DIRECTORY_APP_NAME . "\\" . EsConst::ES_DIRECTORY_MODULE_NAME . "\\" . $module . "\\" . EsConst::ES_DIRECTORY_PROCESS_NAME . "\\" . $className;
                     if (class_exists($class)) {
 
                         $process = new \ReflectionClass($class);

@@ -27,7 +27,7 @@ class Config
     {
         try {
             $instance = \EasySwoole\EasySwoole\Config::getInstance();
-            $path = EASYSWOOLE_ROOT . '/' . AppConst::ES_DIRECTORY_CONF_NAME . '/';
+            $path = EASYSWOOLE_ROOT . '/' . \App\Constant\EsConst::ES_DIRECTORY_CONF_NAME . '/';
             $files = scandir($path) ?? [];
 
             foreach ($files as $file) {

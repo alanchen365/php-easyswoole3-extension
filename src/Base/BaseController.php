@@ -3,6 +3,7 @@
 namespace Es3\Base;
 
 use App\Constant\AppConst;
+use App\Constant\PageConst;
 use App\Constant\ResultConst;
 use App\Module\Owtb\Model\DepotModel;
 use EasySwoole\Component\Di;
@@ -200,8 +201,8 @@ class BaseController extends Controller
     {
         $params = $this->getParams();
 
-        $pageNo = $params[AppConst::PAGE_NO_KEY] ?? 0;
-        $pageNum = $params[AppConst::PAGE_NUM_KEY] ?? AppConst::PAGE_DEFAULT_NUM;
+        $pageNo = $params[PageConst::PAGE_NO_KEY] ?? 0;
+        $pageNum = $params[PageConst::PAGE_NUM_KEY] ?? PageConst::PAGE_DEFAULT_NUM;
 
         // 前端不传递分页 给个默认
         if (0 === $pageNo) {

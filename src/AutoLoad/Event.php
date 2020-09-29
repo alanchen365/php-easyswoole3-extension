@@ -3,6 +3,7 @@
 namespace Es3\AutoLoad;
 
 use App\Constant\AppConst;
+use App\Constant\EsConst;
 use App\Module\Employee\Crontab\UserCrontab;
 use AsaEs\RemoteCall\Rpc;
 use EasySwoole\Component\Singleton;
@@ -19,7 +20,7 @@ class Event
     {
         try {
             $crontabLoads = [];
-            $path = EASYSWOOLE_ROOT . '/' . AppConst::ES_DIRECTORY_APP_NAME . '/' . AppConst::ES_DIRECTORY_MODULE_NAME . '/';
+            $path = EASYSWOOLE_ROOT . '/' . EsConst::ES_DIRECTORY_APP_NAME . '/' . EsConst::ES_DIRECTORY_MODULE_NAME . '/';
             $modules = EsUtility::sancDir($path);
 
             foreach ($modules as $module) {
@@ -27,12 +28,12 @@ class Event
                 \Es3\Event::getInstance()->set($module, function ($module, $function, ...$args) use ($path) {
 
                     $module = ucwords($module);
-                    $eventPath = $path . $module . '/' . AppConst::ES_FILE_NAME_EVENT;
+                    $eventPath = $path . $module . '/' . EsConst::ES_FILE_NAME_EVENT;
                     if (!file_exists($eventPath)) {
                         Logger::getInstance()->notice("没有找到" . $eventPath . "事件文件");
                         return;
                     }
-                    $namespace = "\\" . AppConst::ES_DIRECTORY_APP_NAME . "\\" . AppConst::ES_DIRECTORY_MODULE_NAME . "\\" . $module . "\\" . AppConst::ES_DIRECTORY_EVENT_NAME;
+                    $namespace = "\\" . EsConst::ES_DIRECTORY_APP_NAME . "\\" . EsConst::ES_DIRECTORY_MODULE_NAME . "\\" . $module . "\\" . EsConst::ES_DIRECTORY_EVENT_NAME;
                     if (!class_exists($namespace)) {
                         Logger::getInstance()->notice("没有找到" . $namespace . "事件命名空间");
                         return;

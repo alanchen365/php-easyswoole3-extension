@@ -4,6 +4,7 @@ namespace Es3\Output;
 
 use App\AppConst\AppInfo;
 use App\Constant\AppConst;
+use App\Constant\LoggerConst;
 use App\Constant\ResultConst;
 use AsaEs\AsaEsConst;
 use AsaEs\Logger\FileLogger;
@@ -72,7 +73,7 @@ class Json
             'response' => ['response_code' => $code, 'response_msg' => $msg]
         ];
 
-        Logger::getInstance()->log(json_encode($save), LoggerInterface::LOG_LEVEL_INFO, AppConst::LOG_NAME_REQUEST_RESPONSE);
+        Logger::getInstance()->log(json_encode($save), LoggerInterface::LOG_LEVEL_INFO, LoggerConst::LOG_NAME_REQUEST_RESPONSE);
         
         $response->withHeader('Content-type', 'application/json;charset=utf-8');
         $response->write(json_encode($data));

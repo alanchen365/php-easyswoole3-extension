@@ -52,5 +52,4 @@ class Jwt
             throw new ErrorException($throwable->getCode(), $throwable->getMessage());
         }
     }
-
 }

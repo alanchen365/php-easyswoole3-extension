@@ -3,6 +3,7 @@
 namespace Es3\Proxy;
 
 use App\Constant\AppConst;
+use App\Constant\EsConst;
 use EasySwoole\EasySwoole\Logger;
 use EasySwoole\Validate\Validate;
 use Es3\EsUtility;
@@ -13,16 +14,15 @@ class ValidateProxy
 {
     protected $validate;
 
-
     function __construct($namespace)
     {
         $className = EsUtility::getControllerClassName($namespace);
         $moduleName = EsUtility::getControllerModuleName($namespace);
 
-        $moduleDirName = AppConst::ES_DIRECTORY_MODULE_NAME;
+        $moduleDirName = EsConst::ES_DIRECTORY_MODULE_NAME;
         $namespace = "App\\{$moduleDirName}\\{$moduleName}\\Validate\\{$className}Validate";
 
-        if ($moduleName == AppConst::ES_DIRECTORY_CONTROLLER_NAME) {
+        if ($moduleName == EsConst::ES_DIRECTORY_CONTROLLER_NAME) {
             return;
         }
 

@@ -3,6 +3,7 @@
 namespace Es3;
 
 use App\Constant\AppConst;
+use App\Constant\LoggerConst;
 use AsaEs\AsaEsConst;
 use EasySwoole\Component\Di;
 use EasySwoole\EasySwoole\Logger;
@@ -41,11 +42,11 @@ class Middleware
     {
         // 任何环境都不做限制
         $headers = 'Content-Type, Authorization, X-Requested-With, token, identity';
-        $allowAccessControl = AppConst::HEADERS_ALLOW_ACCESS_CONTROL;
+        $allowAccessControl = AppConst::HEADER_ALLOW_ACCESS_CONTROL;
         if (!superEmpty($allowAccessControl)) {
             $headers = $headers . ' , ' . implode($allowAccessControl, ' , ');
         }
-        
+
         $response->withHeader('Access-Control-Allow-Headers', $headers);
 
         /** 生产情况的跨域 由 运维处理 */
@@ -85,7 +86,7 @@ class Middleware
     private function slog(Request $request, $response)
     {
         /** 从请求里获取之前增加的时间戳 */
-        $reqTime = $request->getAttribute('access_log');
+        $reqTime = $request->getAttribute(LoggerConst::LOG_NAME_ACCESS);
 
         /** 计算一下运行时间  */
         $runTime = round(microtime(true) - $reqTime, 5);
@@ -95,17 +96,17 @@ class Middleware
         $accessLog = $request->getUri() . ' | ' . clientIp() . ' | ' . $runTime . ' ms | ' . $request->getHeader('user-agent')[0];
 
         /** 正常日志 */
-        $log = Logger::getInstance()->log($accessLog, LoggerInterface::LOG_LEVEL_INFO, 'access_log');
+        $log = Logger::getInstance()->log($accessLog, LoggerInterface::LOG_LEVEL_INFO, LoggerConst::LOG_NAME_ACCESS);
 
         /** 慢日志 */
-        if ($runTime > round(AppConst::LOG_SLOG_SECONDS * 1000, 0)) {
-            $log = Logger::getInstance()->log($accessLog, LoggerInterface::LOG_LEVEL_WARNING, 'slog');
+        if ($runTime > round(LoggerConst::LOG_SLOG_SECONDS * 1000, 0)) {
+            $log = Logger::getInstance()->log($accessLog, LoggerInterface::LOG_LEVEL_WARNING, LoggerConst::LOG_NAME_SLOG);
         }
     }
 
     private function access(Request $request, $response)
     {
         $accessLog = $request->getUri() . ' | ' . clientIp() . ' | ' . $request->getHeader('user-agent')[0];
-        Logger::getInstance()->log($accessLog, LoggerInterface::LOG_LEVEL_INFO, 'access_log');
+        Logger::getInstance()->log($accessLog, LoggerInterface::LOG_LEVEL_INFO, LoggerConst::LOG_NAME_ACCESS);
     }
 }

@@ -3,6 +3,7 @@
 namespace Es3\Proxy;
 
 use App\Constant\AppConst;
+use App\Constant\EsConst;
 use EasySwoole\Component\Singleton;
 use EasySwoole\EasySwoole\Logger;
 use Es3\Base\Service;
@@ -17,10 +18,10 @@ class ServiceProxy
         $className = EsUtility::getControllerClassName($namespace);
         $moduleName = EsUtility::getControllerModuleName($namespace);
 
-        $moduleDirName = AppConst::ES_DIRECTORY_MODULE_NAME;
+        $moduleDirName = EsConst::ES_DIRECTORY_MODULE_NAME;
         $namespace = "App\\{$moduleDirName}\\{$moduleName}\\Service\\{$className}Service";
 
-        if ($moduleName == AppConst::ES_DIRECTORY_CONTROLLER_NAME) {
+        if ($moduleName == EsConst::ES_DIRECTORY_CONTROLLER_NAME) {
             return;
         }
 

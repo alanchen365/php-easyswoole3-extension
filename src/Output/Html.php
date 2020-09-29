@@ -11,7 +11,6 @@ class Html
     public static function show(string $file): void
     {
         $response = Di::getInstance()->get(AppConst::DI_RESPONSE);
-//        $response->withHeader('Content-Type', 'ssss');
         $response->write(file_get_contents($file));
         $response->end();
     }
