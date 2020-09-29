@@ -116,16 +116,21 @@ trait Dao
         $this->model::create()->query((new QueryBuilder())->raw('alter table ' . $schemaInfo->getTable() . ' auto_increment = ' . $autoIncrement));
     }
 
-    public function getAll($where = null, array $page = [], array $orderBys = ['id' => 'DESC'], array $groupBys = [], array $field = [])
+    public function getAll($where = null, array $page = [], array $orderBys = [], array $groupBys = [], array $field = [])
     {
         $model = $this->model::create();
-
         $LogicDelete = $this->model->getLogicDelete();
         $where = array_merge((array)$where, $LogicDelete);
         $where = $this->adjustWhere($where);
 
         if ($page) {
             $model->limit($page[0], $page[1]);
+        }
+
+        /** 没有传递排序 默认一个 */
+        if (superEmpty($orderBys)) {
+            $pk = $model->schemaInfo()->getPkFiledName();
+            $orderBys = [$pk => 'DESC'];
         }
 
         if ($orderBys) {

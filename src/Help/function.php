@@ -1,6 +1,5 @@
 <?php
 
-
 use App\Constant\AppConst;
 use EasySwoole\Component\Di;
 use EasySwoole\Http\Request;
@@ -103,4 +102,14 @@ function requestLog(): ?array
     }
 
     return null;
+}
+
+function setIdentity($identity): void
+{
+    Di::getInstance()->set(AppConst::AUTH_HEADER, $identity);
+}
+
+function identity()
+{
+    return Di::getInstance()->get(AppConst::AUTH_HEADER);
 }
