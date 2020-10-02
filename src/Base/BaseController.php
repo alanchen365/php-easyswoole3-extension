@@ -190,8 +190,8 @@ class BaseController extends Controller
      */
     protected function actionNotFound(?string $action)
     {
-//        $this->response()->withStatus(406);
-//        $this->response()->end();
+        $this->response()->withStatus(404);
+        $this->response()->end();
     }
 
     /**
