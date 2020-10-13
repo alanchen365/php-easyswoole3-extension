@@ -20,7 +20,7 @@ class LoggerHandel implements LoggerInterface
         if (empty($logDir)) {
             $logDir = getcwd();
         }
-        $this->logDir = $logDir;
+        $this->logDir = strtolower($logDir);
     }
 
     function log(?string $msg, int $logLevel = self::LOG_LEVEL_INFO, string $category = 'debug'): string
