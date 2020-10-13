@@ -10,7 +10,7 @@ class FileLock
     public static function get(string $fileName): \swoole_lock
     {
         $tempDir = \config('LOCK_DIR');
-        $fileName = "{$tempDir}/lock_{$fileName}.lock";
+        $fileName = "{$tempDir}lock_{$fileName}.lock";
         
         $lock = new \swoole_lock(SWOOLE_FILELOCK, $fileName);
         $errCode = $lock->errCode ?? null;

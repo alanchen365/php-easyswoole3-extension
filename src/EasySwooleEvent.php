@@ -51,9 +51,9 @@ class EasySwooleEvent
         \Es3\AutoLoad\Event::getInstance()->autoLoad();
 
         /** 目录不存在就创建 */
-        is_dir(EnvConst::PATH_LOG) ? null : mkdir(EnvConst::PATH_LOG, 0777, true);
-        is_dir(EnvConst::PATH_TEMP) ? null : mkdir(EnvConst::PATH_TEMP, 0777, true);
-        is_dir(EnvConst::PATH_LOCK) ? null : mkdir(EnvConst::PATH_LOCK, 0777, true);
+        is_dir(strtolower(EnvConst::PATH_LOG)) ? null : mkdir(strtolower(EnvConst::PATH_LOG), 0777, true);
+        is_dir(strtolower(EnvConst::PATH_TEMP)) ? null : mkdir(strtolower(EnvConst::PATH_TEMP), 0777, true);
+        is_dir(strtolower(EnvConst::PATH_LOCK)) ? null : mkdir(strtolower(EnvConst::PATH_LOCK), 0777, true);
 
         /** 拷贝钩子 */
         if (isDev()) {
@@ -75,12 +75,12 @@ class EasySwooleEvent
             DbManager::getInstance()->onQuery(function ($res, $builder, $start) {
 
                 $nowDate = date('Y-m-d H:i:s', time());
-
-                /** 打印日志 */
-                echo "\n====================  {$nowDate} ====================\n";
-                echo $builder->getLastQuery() . "\n";
-                echo "==================== {$nowDate} ====================\n";
-
+                if (!isProduction()) {
+                    /** 打印日志 */
+                    echo "\n====================  {$nowDate} ====================\n";
+                    echo $builder->getLastQuery() . "\n";
+                    echo "==================== {$nowDate} ====================\n";
+                }
                 Logger::getInstance()->log($builder->getLastQuery(), LoggerInterface::LOG_LEVEL_INFO, 'query');
             });
         }
