@@ -113,3 +113,8 @@ function identity()
 {
     return Di::getInstance()->get(AppConst::HEADER_AUTH);
 }
+
+function redisKey(string $key): string
+{
+    return strtolower(\App\Constant\EnvConst::SERVICE_NAME) . '_' . $key;
+}
