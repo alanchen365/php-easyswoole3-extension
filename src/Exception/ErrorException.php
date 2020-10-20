@@ -4,7 +4,7 @@ namespace Es3\Exception;
 
 use EasySwoole\EasySwoole\Logger;
 
-class ErrorException extends BaseException
+class ErrorException extends EsConst
 {
     public function __construct(int $code, string $msg = '', \Throwable $previous = null)
     {

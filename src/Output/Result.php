@@ -5,6 +5,7 @@ namespace Es3\Output;
 use App\Constant\AppConst;
 use App\Constant\ResultConst;
 use EasySwoole\Component\Di;
+use Es3\Constant\SystemConst;
 use Es3\EsConfig;
 
 class Result
@@ -73,7 +74,7 @@ class Result
             ResultConst::MSG_KEY => $this->_msg,
             ResultConst::TRACE_KEY => $this->_trace,
             ResultConst::TIME_KEY => date(ResultConst::TIME_FORMAT),
-            AppConst::DI_TRACE_CODE => Di::getInstance()->get(AppConst::DI_TRACE_CODE),
+            SystemConst::DI_TRACE_CODE => Di::getInstance()->get(SystemConst::DI_TRACE_CODE),
         ];
 
         /** 不是生产环境 显示调试信息 */

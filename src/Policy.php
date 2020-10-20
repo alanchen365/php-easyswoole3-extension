@@ -10,6 +10,7 @@ use EasySwoole\EasySwoole\Command\Utility;
 use EasySwoole\FastCache\Cache;
 use EasySwoole\Http\Request;
 use EasySwoole\Policy\PolicyNode;
+use Es3\Constant\SystemConst;
 
 class Policy
 {
@@ -18,7 +19,7 @@ class Policy
     public function initialize(): \EasySwoole\Policy\Policy
     {
         $policy = new \EasySwoole\Policy\Policy();
-        $isAuthKey = strtolower('policy.' . AppConst::POLICY_CONF_IS_AUTH);
+        $isAuthKey = strtolower('policy.' . SystemConst::POLICY_CONF_IS_AUTH);
         $policyConf = config($isAuthKey, true);
         foreach ($policyConf as $key => $conf) {
 
@@ -40,7 +41,7 @@ class Policy
     {
         $isAuth = true;
 
-        $policy = Di::getInstance()->get(AppConst::DI_POLICY);
+        $policy = Di::getInstance()->get(SystemConst::DI_POLICY);
         $request = Di::getInstance()->get(AppConst::DI_REQUEST);
 
         $uri = $request->getServerParams()['request_uri'];

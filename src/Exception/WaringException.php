@@ -5,7 +5,7 @@ namespace Es3\Exception;
 
 use EasySwoole\EasySwoole\Logger;
 
-class WaringException extends BaseException
+class WaringException extends EsConst
 {
     public function __construct(int $code, string $msg = '', \Throwable $previous = null)
     {
