@@ -21,7 +21,6 @@ use EasySwoole\ORM\Db\Connection;
 use EasySwoole\ORM\DbManager;
 use EasySwoole\Pool\Exception\Exception;
 use EasySwoole\Template\Render;
-use Es3\Constant\SystemConst;
 use Es3\Policy;
 use Es3\Exception\ErrorException;
 use Es3\Handle\HttpThrowable;
@@ -126,7 +125,7 @@ class EasySwooleEvent
         });
 
         /** 策略加载 */
-        Di::getInstance()->set(SystemConst::DI_POLICY, Policy::getInstance()->initialize());
+        Di::getInstance()->set(AppConst::DI_POLICY, Policy::getInstance()->initialize());
 
         /** smarty */
         Render::getInstance()->getConfig()->setRender(new Smarty());

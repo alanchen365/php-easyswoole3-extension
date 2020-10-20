@@ -86,7 +86,7 @@ class Middleware
     private function slog(Request $request, $response)
     {
         /** 从请求里获取之前增加的时间戳 */
-        $reqTime = $request->getAttribute(\Es3\Constant\LoggerConst::LOG_NAME_ACCESS);
+        $reqTime = $request->getAttribute(LoggerConst::LOG_NAME_ACCESS);
 
         /** 计算一下运行时间  */
         $runTime = round(microtime(true) - $reqTime, 5);
@@ -96,17 +96,17 @@ class Middleware
         $accessLog = $request->getUri() . ' | ' . clientIp() . ' | ' . $runTime . ' ms | ' . $request->getHeader('user-agent')[0];
 
         /** 正常日志 */
-        $log = Logger::getInstance()->log($accessLog, LoggerInterface::LOG_LEVEL_INFO, \Es3\Constant\LoggerConst::LOG_NAME_ACCESS);
-        
+        $log = Logger::getInstance()->log($accessLog, LoggerInterface::LOG_LEVEL_INFO, LoggerConst::LOG_NAME_ACCESS);
+
         /** 慢日志 */
-        if ($runTime > round(\App\Constant\LoggerConst::LOG_SLOG_SECONDS * 1000, 0)) {
-            $log = Logger::getInstance()->log($accessLog, LoggerInterface::LOG_LEVEL_WARNING, \Es3\Constant\LoggerConst::LOG_NAME_SLOG);
+        if ($runTime > round(LoggerConst::LOG_SLOG_SECONDS * 1000, 0)) {
+            $log = Logger::getInstance()->log($accessLog, LoggerInterface::LOG_LEVEL_WARNING, LoggerConst::LOG_NAME_SLOG);
         }
     }
 
     private function access(Request $request, $response)
     {
         $accessLog = $request->getUri() . ' | ' . clientIp() . ' | ' . $request->getHeader('user-agent')[0];
-        Logger::getInstance()->log($accessLog, LoggerInterface::LOG_LEVEL_INFO, \Es3\Constant\LoggerConst::LOG_NAME_ACCESS);
+        Logger::getInstance()->log($accessLog, LoggerInterface::LOG_LEVEL_INFO, LoggerConst::LOG_NAME_ACCESS);
     }
 }

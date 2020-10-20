@@ -73,7 +73,7 @@ class Json
             'response' => ['response_code' => $code, 'response_msg' => $msg]
         ];
 
-        Logger::getInstance()->log(json_encode($save), LoggerInterface::LOG_LEVEL_INFO, \Es3\Constant\LoggerConst::LOG_NAME_REQUEST_RESPONSE);
+        Logger::getInstance()->log(json_encode($save), LoggerInterface::LOG_LEVEL_INFO, LoggerConst::LOG_NAME_REQUEST_RESPONSE);
         
         $response->withHeader('Content-type', 'application/json;charset=utf-8');
         $response->write(json_encode($data));

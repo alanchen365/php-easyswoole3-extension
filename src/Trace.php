@@ -8,7 +8,6 @@ use EasySwoole\Component\Di;
 use EasySwoole\Component\Singleton;
 use EasySwoole\EasySwoole\Config;
 use EasySwoole\Http\AbstractInterface\AbstractRouter;
-use Es3\Constant\SystemConst;
 use FastRoute\RouteCollector;
 
 /**
@@ -23,11 +22,11 @@ class Trace
      */
     public static function getRequestId()
     {
-        if (!Di::getInstance()->get(SystemConst::DI_TRACE_CODE)) {
+        if (!Di::getInstance()->get(AppConst::DI_TRACE_CODE)) {
             Trace::createRequestId();
         }
 
-        return Di::getInstance()->get(SystemConst::DI_TRACE_CODE);
+        return Di::getInstance()->get(AppConst::DI_TRACE_CODE);
     }
 
     /**
@@ -35,6 +34,6 @@ class Trace
      */
     public static function createRequestId(): void
     {
-        Di::getInstance()->set(SystemConst::DI_TRACE_CODE, md5(uniqid(microtime(true), true)));
+        Di::getInstance()->set(AppConst::DI_TRACE_CODE, md5(uniqid(microtime(true), true)));
     }
 }
