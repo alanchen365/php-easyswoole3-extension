@@ -49,6 +49,12 @@ class Middleware
 
         $response->withHeader('Access-Control-Allow-Headers', $headers);
 
+        if ($request->getMethod() === 'OPTIONS') {
+            $response->withStatus(Status::CODE_OK);
+            $response->end();
+            return true;
+        }
+
         /** 生产情况的跨域 由 运维处理 */
         if (!isProduction()) {
 
@@ -58,12 +64,6 @@ class Middleware
             $response->withHeader('Access-Control-Allow-Origin', $origin);
             $response->withHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, PUT, OPTIONS');
             $response->withHeader('Access-Control-Allow-Credentials', 'true');
-
-            if ($request->getMethod() === 'OPTIONS') {
-                $response->withStatus(Status::CODE_OK);
-                $response->end();
-                return false;
-            }
         }
     }
 
