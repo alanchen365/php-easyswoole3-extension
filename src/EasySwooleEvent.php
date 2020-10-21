@@ -6,6 +6,9 @@ namespace Es3;
 use App\Constant\AppConst;
 use App\Constant\EnvConst;
 use App\LogPusher;
+use App\Module\Callback\Queue\TaskErrorQueue;
+use App\Module\Callback\Queue\TaskFailQueue;
+use App\Module\Callback\Queue\TaskInvalidQueue;
 use EasySwoole\Component\Di;
 use EasySwoole\Console\Console;
 use EasySwoole\EasySwoole\Command\Utility;
@@ -21,6 +24,7 @@ use EasySwoole\ORM\Db\Connection;
 use EasySwoole\ORM\DbManager;
 use EasySwoole\Pool\Exception\Exception;
 use EasySwoole\Template\Render;
+use Es3\AutoLoad\Queue;
 use Es3\Policy;
 use Es3\Exception\ErrorException;
 use Es3\Handle\HttpThrowable;
@@ -154,6 +158,9 @@ class EasySwooleEvent
             } catch (Exception $e) {
                 throw new ErrorException(1002, 'redis连接失败');
             }
+            
+            /** 初始化消息队列 */
+            Queue::getInstance()->autoLoad();
         }
     }
 

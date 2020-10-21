@@ -4,7 +4,7 @@ namespace Es3\AutoLoad;
 
 use App\Constant\AppConst;
 use App\Constant\EnvConst;
-use App\Constant\EsConst;
+use Es3\Constant\EsConst;
 use EasySwoole\Component\Singleton;
 use EasySwoole\EasySwoole\Command\Utility;
 use EasySwoole\EasySwoole\Logger;

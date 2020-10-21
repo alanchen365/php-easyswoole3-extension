@@ -3,7 +3,7 @@
 namespace Es3\AutoLoad;
 
 use App\Constant\AppConst;
-use App\Constant\EsConst;
+use Es3\Constant\EsConst;
 use App\Module\Employee\Crontab\UserCrontab;
 use AsaEs\RemoteCall\Rpc;
 use EasySwoole\Component\Singleton;

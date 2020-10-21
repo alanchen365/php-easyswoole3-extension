@@ -114,7 +114,12 @@ function identity()
     return Di::getInstance()->get(AppConst::HEADER_AUTH);
 }
 
-function redisKey(string $key): string
+function redisKey(string ...$key): string
 {
-    return strtolower(\App\Constant\EnvConst::SERVICE_NAME) . '_' . $key;
+    if (superEmpty($key)) {
+        throw new \Es3\Exception\InfoException(1301, '请传递redis key');
+    }
+    
+    $key = implode('_', $key);
+    return strtolower(\App\Constant\EnvConst::SERVICE_NAME . '_' . \App\Constant\EnvConst::SERVER_PORT . '_' . $key);
 }

@@ -27,7 +27,7 @@ class Router
     public function autoLoad(): void
     {
         try {
-            $path = EASYSWOOLE_ROOT . '/' . \App\Constant\EsConst::ES_DIRECTORY_APP_NAME . '/' . \App\Constant\EsConst::ES_DIRECTORY_MODULE_NAME . '/';
+            $path = EASYSWOOLE_ROOT . '/' . \Es3\Constant\EsConst::ES_DIRECTORY_APP_NAME . '/' . \Es3\Constant\EsConst::ES_DIRECTORY_MODULE_NAME . '/';
             $files = scandir($path) ?? [];
             
             foreach ($files as $key => $dir) {
@@ -39,7 +39,7 @@ class Router
 
             // 获取路由文件下所有目录
             foreach ($files as $dir) {
-                $routerFile = $path . $dir . '/' . \App\Constant\EsConst::ES_FILE_NAME_ROUTER;
+                $routerFile = $path . $dir . '/' . \Es3\Constant\EsConst::ES_FILE_NAME_ROUTER;
                 if (!file_exists($routerFile)) {
                     continue;
                 }

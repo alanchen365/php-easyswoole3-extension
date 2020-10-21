@@ -3,15 +3,14 @@
 namespace Es3\AutoLoad;
 
 use App\Constant\AppConst;
+use App\Constant\EnvConst;
 use Es3\Constant\EsConst;
-use App\Module\Employee\Crontab\UserCrontab;
-use AsaEs\RemoteCall\Rpc;
 use EasySwoole\Component\Singleton;
 use EasySwoole\EasySwoole\Command\Utility;
 use EasySwoole\EasySwoole\Logger;
 use Es3\EsUtility;
 
-class Crontab
+class Queue
 {
     use Singleton;
 
@@ -24,12 +23,12 @@ class Crontab
 
             foreach ($modules as $module) {
 
-                $crontabPath = $path . $module . '/' . EsConst::ES_DIRECTORY_CRONTAB_NAME . '/';
-                $crontabFiles = EsUtility::sancDir($crontabPath);
+                $queuePath = $path . $module . '/' . EsConst::ES_DIRECTORY_QUEUE_NAME . '/';
+                $queueFiles = EsUtility::sancDir($queuePath);
 
-                foreach ($crontabFiles as $key => $crontabFile) {
+                foreach ($queueFiles as $key => $processFile) {
 
-                    $autoLooadFile = $crontabPath . $crontabFile;
+                    $autoLooadFile = $queuePath . $processFile;
                     if (!file_exists($autoLooadFile)) {
                         continue;
                     }
@@ -38,18 +37,22 @@ class Crontab
                     $className = basename($autoLooadFile, '.php');
 
                     /** 加载定时任务 */
-                    $class = "\\" . EsConst::ES_DIRECTORY_APP_NAME . "\\" . EsConst::ES_DIRECTORY_MODULE_NAME . "\\" . $module . "\\" . EsConst::ES_DIRECTORY_CRONTAB_NAME . "\\" . $className;
+                    $class = "\\" . EsConst::ES_DIRECTORY_APP_NAME . "\\" . EsConst::ES_DIRECTORY_MODULE_NAME . "\\" . $module . "\\" . EsConst::ES_DIRECTORY_QUEUE_NAME . "\\" . $className;
 
                     if (class_exists($class)) {
-                        \EasySwoole\EasySwoole\Crontab\Crontab::getInstance()->addTask($class);
-                        echo Utility::displayItem('Crontab', $class);
+
+                        $queueName = $className . '_' . $module;
+                        $redisPool = \EasySwoole\RedisPool\Redis::getInstance()->get(EnvConst::REDIS_KEY);
+                        $class::getInstance(new \EasySwoole\Queue\Driver\Redis($redisPool, $queueName));
+
+                        echo Utility::displayItem('Queue', $class);
                         echo "\n";
                     }
                 }
             }
 
         } catch (\Throwable $throwable) {
-            echo 'Crontab Initialize Fail :' . $throwable->getMessage();
+            echo 'Process Initialize Fail :' . $throwable->getMessage();
         }
     }
 }

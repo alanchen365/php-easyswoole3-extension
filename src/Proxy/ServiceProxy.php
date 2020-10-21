@@ -3,7 +3,7 @@
 namespace Es3\Proxy;
 
 use App\Constant\AppConst;
-use App\Constant\EsConst;
+use Es3\Constant\EsConst;
 use EasySwoole\Component\Singleton;
 use EasySwoole\EasySwoole\Logger;
 use Es3\Base\Service;
