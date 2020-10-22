@@ -119,7 +119,14 @@ function redisKey(string ...$key): string
     if (superEmpty($key)) {
         throw new \Es3\Exception\InfoException(1301, '请传递redis key');
     }
-    
+
     $key = implode('_', $key);
     return strtolower(\App\Constant\EnvConst::SERVICE_NAME . '_' . \App\Constant\EnvConst::SERVER_PORT . '_' . $key);
 }
+
+function traceCode(): string
+{
+    $traceCode = Trace::getRequestId();
+    return $traceCode;
+}
+
