@@ -32,15 +32,44 @@ class Model extends AbstractModel
             }
         }
 
+        return $params;
+    }
+
+    public function autoCreateUser($params): array
+    {
+        $schemaInfo = $this->schemaInfo();
+        $columns = $schemaInfo->getColumns();
+
         foreach ($columns as $key => $column) {
 
             /** 增加user code */
-            if (in_array($key, AppConst::TABLE_AUTO_USER_CODE) && createUserCode()) {
+            if (in_array($key, AppConst::TABLE_AUTO_CREATE_USER_CODE) && createUserCode()) {
                 $params[$key] = createUserCode();
             }
 
             /** 增加user name */
-            if (in_array($key, AppConst::TABLE_AUTO_USER_NAME) && createUserName()) {
+            if (in_array($key, AppConst::TABLE_AUTO_CREATE_USER_NAME) && createUserName()) {
+                $params[$key] = createUserName();
+            }
+        }
+
+        return $params;
+    }
+
+    public function autoUpdateUser($params): array
+    {
+        $schemaInfo = $this->schemaInfo();
+        $columns = $schemaInfo->getColumns();
+
+        foreach ($columns as $key => $column) {
+
+            /** 增加user code */
+            if (in_array($key, AppConst::TABLE_AUTO_UPDATE_USER_CODE) && createUserCode()) {
+                $params[$key] = createUserCode();
+            }
+
+            /** 增加user name */
+            if (in_array($key, AppConst::TABLE_AUTO_UPDATE_USER_NAME) && createUserName()) {
                 $params[$key] = createUserName();
             }
         }

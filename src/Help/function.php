@@ -132,7 +132,6 @@ function traceCode(): string
 
 function createUserCode()
 {
-    var_dump(identity(),'identity');
     return identity()[AppConst::IDENTITY_USER_CODE] ?? null;
 }
 

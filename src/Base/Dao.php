@@ -7,6 +7,7 @@ use EasySwoole\ORM\Db\ClientInterface;
 use EasySwoole\ORM\DbManager;
 use Es3\Exception\ErrorException;
 use EasySwoole\Mysqli\QueryBuilder;
+use Es3\Exception\WaringException;
 
 trait Dao
 {
@@ -16,7 +17,9 @@ trait Dao
     {
         /** 调整参数 */
         $params = $this->adjustWhere($params);
+        $params = $this->model->autoCreateUser($params);
 
+        var_dump($params, '$params');
         return $this->model::create($params)->save();
     }
 
@@ -33,9 +36,6 @@ trait Dao
     public function updateField(array $originalFieldValues, array $updateFieldValues, $allow = false): int
     {
         $originalFieldValues = $this->adjustWhere($originalFieldValues);
-        if (superEmpty($originalFieldValues) || superEmpty($updateFieldValues)) {
-            throw new ErrorException(1011, "updateField()更新参数不能为空");
-        }
 
         $schemaInfo = $this->model->schemaInfo();
         $primaryKey = $schemaInfo->getPkFiledName();
@@ -43,8 +43,19 @@ trait Dao
         // 不允许更新主键
         unset($updateFieldValues[$primaryKey]);
 
+        if (superEmpty($originalFieldValues) || superEmpty($updateFieldValues)) {
+            throw new ErrorException(1011, "updateField()更新参数不能为空");
+        }
+
         $this->model = $this->model::create();
+        $updateFieldValues = $this->model->autoUpdateUser($updateFieldValues);
+
+        $updateFieldValues = $this->model->autoUpdateUser($updateFieldValues);
         $this->model->update($updateFieldValues, $originalFieldValues, $allow);
+
+        if (!$this->model->lastQueryResult()) {
+            throw new WaringException(1006, '更新出现异常 请检查参数');
+        }
 
         $lastErrorNo = $this->model->lastQueryResult()->getLastErrorNo();
         if ($lastErrorNo !== 0) {
@@ -85,6 +96,7 @@ trait Dao
 
         /** 调整参数 */
         $data = $this->adjustWhere($data);
+        $data = $this->model->autoUpdateUser($data);
 
         $this->model = $this->model::create();
         $this->model->update($data, $primary, $allow);
@@ -163,6 +175,11 @@ trait Dao
     {
         /** 当前是否开启事物 */
         $this->model = $this->model::create();
+
+        foreach ($data as $key => $val) {
+            $val = $this->model->autoCreateUser($val);
+            $data[$key] = $val;
+        }
 
         $result = $this->model->insertAll($data, $column);
 
