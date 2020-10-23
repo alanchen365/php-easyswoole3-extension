@@ -130,3 +130,13 @@ function traceCode(): string
     return $traceCode;
 }
 
+function createUserCode()
+{
+    var_dump(identity(),'identity');
+    return identity()[AppConst::IDENTITY_USER_CODE] ?? null;
+}
+
+function createUserName()
+{
+    return identity()[AppConst::IDENTITY_USER_NAME] ?? null;
+}

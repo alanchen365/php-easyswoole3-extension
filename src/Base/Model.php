@@ -26,8 +26,22 @@ class Model extends AbstractModel
         $columns = $schemaInfo->getColumns();
 
         foreach ($params as $field => $value) {
+            /** 如果不是该字段的数据 自动删除掉 */
             if (!isset($columns[$field])) {
                 unset($params[$field]);
+            }
+        }
+
+        foreach ($columns as $key => $column) {
+
+            /** 增加user code */
+            if (in_array($key, AppConst::TABLE_AUTO_USER_CODE) && createUserCode()) {
+                $params[$key] = createUserCode();
+            }
+
+            /** 增加user name */
+            if (in_array($key, AppConst::TABLE_AUTO_USER_NAME) && createUserName()) {
+                $params[$key] = createUserName();
             }
         }
 

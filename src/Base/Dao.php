@@ -16,6 +16,7 @@ trait Dao
     {
         /** 调整参数 */
         $params = $this->adjustWhere($params);
+
         return $this->model::create($params)->save();
     }
 
