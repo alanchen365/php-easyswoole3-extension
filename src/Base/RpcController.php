@@ -2,7 +2,9 @@
 
 namespace Es3\Base;
 
-class RpcController
-{
+use EasySwoole\Rpc\AbstractService;
 
+class RpcController extends AbstractService
+{
+    
 }
