@@ -9,6 +9,7 @@ use App\LogPusher;
 use App\Module\Callback\Queue\TaskErrorQueue;
 use App\Module\Callback\Queue\TaskFailQueue;
 use App\Module\Callback\Queue\TaskInvalidQueue;
+use App\Rpc\Oms;
 use EasySwoole\Component\Di;
 use EasySwoole\Console\Console;
 use EasySwoole\EasySwoole\Command\Utility;
@@ -23,8 +24,11 @@ use EasySwoole\Log\LoggerInterface;
 use EasySwoole\ORM\Db\Connection;
 use EasySwoole\ORM\DbManager;
 use EasySwoole\Pool\Exception\Exception;
+use EasySwoole\Rpc\NodeManager\RedisManager;
+use EasySwoole\Rpc\Rpc;
 use EasySwoole\Template\Render;
 use Es3\AutoLoad\Queue;
+use Es3\Constant\RpcConst;
 use Es3\Policy;
 use Es3\Exception\ErrorException;
 use Es3\Handle\HttpThrowable;
@@ -102,31 +106,31 @@ class EasySwooleEvent
         /** 初始化自定义进程 */
         \Es3\AutoLoad\Process::getInstance()->autoLoad();
 
-        $consoleName = EnvConst::SERVICE_NAME . '.console';
-        ServerManager::getInstance()->addServer($consoleName, EnvConst::CONSOLE_PORT, SWOOLE_TCP, AppConst::SERVER_HOST, [
-            'open_eof_check' => false
-        ]);
+//        $consoleName = EnvConst::SERVICE_NAME . '.console';
+//        ServerManager::getInstance()->addServer($consoleName, EnvConst::CONSOLE_PORT, SWOOLE_TCP, AppConst::SERVER_HOST, [
+//            'open_eof_check' => false
+//        ]);
 
-        $consoleTcp = ServerManager::getInstance()->getSwooleServer($consoleName);
-        $console = new Console($consoleName, EnvConst::CONSOLE_AUTH);
+//        $consoleTcp = ServerManager::getInstance()->getSwooleServer($consoleName);
+//        $console = new Console($consoleName, EnvConst::CONSOLE_AUTH);
 
         /* 注册日志模块 */
-        $console->moduleContainer()->set(new LogPusher());
-        $console->protocolSet($consoleTcp)->attachToServer(ServerManager::getInstance()->getSwooleServer());
+//        $console->moduleContainer()->set(new LogPusher());
+//        $console->protocolSet($consoleTcp)->attachToServer(ServerManager::getInstance()->getSwooleServer());
 
         /* 给es的日志推送加上hook */
-        Logger::getInstance()->onLog()->set('remotePush', function ($msg, $logLevel, $category) use ($console) {
-
-            foreach ($console->allFd() as $item) {
-                $console->send($item['fd'], $msg);
-            }
+//        Logger::getInstance()->onLog()->set('remotePush', function ($msg, $logLevel, $category) use ($console) {
 //
-//            if (Config::getInstance()->getConf('LOG_DIR')) {
-//                /*
-//                 * 可以在 LogPusher 模型的exec方法中，对loglevel，category进行设置，从而实现对日志等级，和分类的过滤推送
-//                 */
+//            foreach ($console->allFd() as $item) {
+//                $console->send($item['fd'], $msg);
 //            }
-        });
+////
+////            if (Config::getInstance()->getConf('LOG_DIR')) {
+////                /*
+////                 * 可以在 LogPusher 模型的exec方法中，对loglevel，category进行设置，从而实现对日志等级，和分类的过滤推送
+////                 */
+////            }
+//        });
 
         /** 策略加载 */
         Di::getInstance()->set(AppConst::DI_POLICY, Policy::getInstance()->initialize());
@@ -158,9 +162,31 @@ class EasySwooleEvent
             } catch (Exception $e) {
                 throw new ErrorException(1002, 'redis连接失败');
             }
-            
+
             /** 初始化消息队列 */
             Queue::getInstance()->autoLoad();
+        }
+
+        /** rpc */
+        $redisConf = config('redis', true);
+        if (!superEmpty($redisConf)) {
+
+            /** 给rpc专门开设redis */
+            $redisConf['db'] = RpcConst::RPC_REDIS_DB;
+            $redisConf = new \EasySwoole\Redis\Config\RedisConfig($redisConf);
+            \EasySwoole\RedisPool\Redis::getInstance()->register(RpcConst::RPC_REDIS_KEY, $redisConf);
+            
+            /** 服务端自动注册 */
+            $redisPool = \EasySwoole\RedisPool\Redis::getInstance()->get(RpcConst::RPC_REDIS_KEY);
+            $config = new \EasySwoole\Rpc\Config();
+            $config->setServerIp(RpcConst::RPC_SERVER_HOST);
+            $config->setListenPort(EnvConst::RPC_PORT);
+
+            $config->setNodeManager(new RedisManager($redisPool));
+
+            Rpc::getInstance($config);
+            Rpc::getInstance()->add(new Oms());
+            Rpc::getInstance()->attachToServer(ServerManager::getInstance()->getSwooleServer());
         }
     }
 
