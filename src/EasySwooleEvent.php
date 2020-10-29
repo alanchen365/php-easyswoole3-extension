@@ -170,7 +170,7 @@ class EasySwooleEvent
         /** rpc */
         $redisConf = config('redis', true);
         if (!superEmpty($redisConf)) {
-
+            
             /** 给rpc专门开设redis */
             $redisConf['db'] = RpcConst::RPC_REDIS_DB;
             $redisConf = new \EasySwoole\Redis\Config\RedisConfig($redisConf);
@@ -181,8 +181,11 @@ class EasySwooleEvent
             $config = new \EasySwoole\Rpc\Config();
             $config->setServerIp(RpcConst::RPC_SERVER_HOST);
             $config->setListenPort(EnvConst::RPC_PORT);
+
             $config->setNodeManager(new RedisManager($redisPool));
-            \Es3\AutoLoad\Rpc::getInstance()->autoLoad($config);
+
+            Rpc::getInstance($config);
+            Rpc::getInstance()->attachToServer(ServerManager::getInstance()->getSwooleServer());
         }
     }
 

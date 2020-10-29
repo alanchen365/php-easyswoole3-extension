@@ -7,7 +7,6 @@ class EsConst
     /** 目录结构定制 */
     const ES_DIRECTORY_MODULE_NAME = 'Module';
     const ES_DIRECTORY_CONTROLLER_NAME = 'Controller';
-    const ES_DIRECTORY_RPC_NAME = 'Rpc';
     const ES_DIRECTORY_APP_NAME = 'App';
     const ES_DIRECTORY_CONF_NAME = 'Conf';
     const ES_DIRECTORY_CRONTAB_NAME = 'Crontab';
