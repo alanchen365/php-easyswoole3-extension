@@ -179,7 +179,7 @@ class EasySwooleEvent
             /** 服务端自动注册 */
             $redisPool = \EasySwoole\RedisPool\Redis::getInstance()->get(RpcConst::RPC_REDIS_KEY);
             $config = new \EasySwoole\Rpc\Config();
-            $config->setServerIp(RpcConst::RPC_SERVER_HOST);
+            $config->setServerIp(EnvConst::RPC_SERVER_HOST);
             $config->setListenPort(EnvConst::RPC_PORT);
             $config->setNodeManager(new RedisManager($redisPool));
             \Es3\AutoLoad\Rpc::getInstance()->autoLoad($config);
