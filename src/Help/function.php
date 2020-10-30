@@ -124,6 +124,17 @@ function redisKey(string ...$key): string
     return strtolower(\App\Constant\EnvConst::SERVICE_NAME . '_' . \App\Constant\EnvConst::SERVER_PORT . '_' . $key);
 }
 
+function headers(): array
+{
+    if (!isHttp()) {
+        return [];
+    }
+
+    $request = Di::getInstance()->get(AppConst::DI_REQUEST);
+    $swooleRequest = (array)$request->getSwooleRequest();
+    return $swooleRequest['header'] ?? [];
+}
+
 function traceCode(): string
 {
     $traceCode = Trace::getRequestId();
