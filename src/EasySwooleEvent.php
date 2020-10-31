@@ -58,6 +58,12 @@ class EasySwooleEvent
         /** 事件注册 */
         \Es3\AutoLoad\Event::getInstance()->autoLoad();
 
+        /** 替换composer.json 确保每次测试环境自动更新 */
+        if (!isProduction()) {
+            $composerJson = './composer.json';
+            file_put_contents($composerJson, ' ', FILE_APPEND);
+        }
+
         /** 目录不存在就创建 */
         is_dir(strtolower(EnvConst::PATH_LOG)) ? null : mkdir(strtolower(EnvConst::PATH_LOG), 0777, true);
         is_dir(strtolower(EnvConst::PATH_TEMP)) ? null : mkdir(strtolower(EnvConst::PATH_TEMP), 0777, true);
