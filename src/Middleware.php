@@ -7,10 +7,9 @@ use App\Constant\LoggerConst;
 use AsaEs\AsaEsConst;
 use EasySwoole\Component\Di;
 use EasySwoole\EasySwoole\Logger;
+use EasySwoole\Http\Message\Status;
 use EasySwoole\Http\Request;
 use \EasySwoole\Http\Response;
-use EasySwoole\Http\Message\Status;
-
 
 use EasySwoole\Log\LoggerInterface;
 use Es3\Handle\LoggerHandel;
@@ -22,8 +21,6 @@ class Middleware
         $request->withAttribute('access_log', microtime(true));
 
         $self = new self();
-        /** 跨域注入 */
-        $self->crossDomain($request, $response);
 
         /** 空参数过滤 */
         $self->clearEmptyParams($request, $response);
@@ -35,6 +32,9 @@ class Middleware
     public static function afterRequest(Request $request, Response $response)
     {
         $self = new self();
+
+        /** 跨域注入 */
+        $self->crossDomain($request, $response);
 
         /**slog */
         $self->slog($request, $response);
@@ -50,7 +50,6 @@ class Middleware
         }
 
         $response->withHeader('Access-Control-Allow-Headers', $headers);
-
         if ($request->getMethod() === 'OPTIONS') {
             $response->withStatus(Status::CODE_OK);
             $response->end();
