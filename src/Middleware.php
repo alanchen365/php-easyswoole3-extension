@@ -9,6 +9,8 @@ use EasySwoole\Component\Di;
 use EasySwoole\EasySwoole\Logger;
 use EasySwoole\Http\Request;
 use \EasySwoole\Http\Response;
+use EasySwoole\Http\Message\Status;
+
 
 use EasySwoole\Log\LoggerInterface;
 use Es3\Handle\LoggerHandel;
