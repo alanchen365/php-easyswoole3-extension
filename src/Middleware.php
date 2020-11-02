@@ -62,7 +62,7 @@ class Middleware
             $origin = current($request->getHeader('origin') ?? null) ?? '';
             $origin = rtrim($origin, '/');
 
-            $response->withHeader('Access-Control-Allow-Origin', $origin);
+            $response->withHeader('Access-Control-Allow-Origin', superEmpty($origin) ? '*' : $origin);
             $response->withHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, PUT, OPTIONS');
             $response->withHeader('Access-Control-Allow-Credentials', 'true');
         }
