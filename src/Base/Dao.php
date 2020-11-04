@@ -209,7 +209,7 @@ trait Dao
         $this->model = $model;
     }
 
-    public function query(string $sql, ?array $param = [], bool $isOne = false, array $queryOption = [], bool $raw = true, string $connection = 'default'): array
+    public function query(string $sql, ?array $param = [], bool $isOne = false, array $queryOption = [], bool $raw = false, string $connection = 'default'): array
     {
         /** 计算总行数查询条件 */
         if (strstr($sql, 'SQL_CALC_FOUND_ROWS')) {
