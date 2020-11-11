@@ -28,8 +28,10 @@ class ServiceProxy
         if (class_exists($namespace) && $moduleDirName != 'Controller') {
             $this->service = new $namespace();
         } else {
-            $msg = 'service 加载失败 : ' . $namespace;
-            Logger::getInstance()->console($msg, 3, 'proxy');
+            if (!isProduction()) {
+                $msg = 'service 加载失败 : ' . $namespace;
+                Logger::getInstance()->console($msg, 3, 'proxy');
+            }
         }
     }
 

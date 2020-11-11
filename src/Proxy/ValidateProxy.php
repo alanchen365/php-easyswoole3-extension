@@ -29,8 +29,10 @@ class ValidateProxy
         if (class_exists($namespace)) {
             $this->validate = new $namespace();
         } else {
-            $msg = 'validate 加载失败 : ' . $namespace;
-            Logger::getInstance()->console($msg, 3, 'proxy');
+            if (!isProduction()) {
+                $msg = 'validate 加载失败 : ' . $namespace;
+                Logger::getInstance()->console($msg, 3, 'proxy');
+            }
         }
     }
 
@@ -48,7 +50,7 @@ class ValidateProxy
             if (!$validate instanceof Validate) {
                 return;
             }
-            
+
             /** 全局调用验证器 */
             if ($validate->validate($params) == false) {
                 throw new InfoException(1002, "{$validate->getError()->getField()}@{$validate->getError()->getFieldAlias()}:{$validate->getError()->getErrorRuleMsg()}");
