@@ -129,7 +129,7 @@ trait Dao
         $this->model::create()->query((new QueryBuilder())->raw('alter table ' . $schemaInfo->getTable() . ' auto_increment = ' . $autoIncrement));
     }
 
-    public function getAll($where = null, array $page = [], array $orderBys = [], array $groupBys = [], array $field = [])
+    public function getAll($where = null, array $page = [], array $orderBys = [], array $groupBys = [], array $fields = [])
     {
         $model = $this->model::create();
         $LogicDelete = $this->model->getLogicDelete();
@@ -158,7 +158,14 @@ trait Dao
             }
         }
 
-        $list = $model->field($field)->withTotalCount()->all($where);
+        /** 对于$field单独处理 */
+        foreach ($fields as $key => $field) {
+            if (strpos($field, '`') === false) {
+                $fields[$key] = "`{$field}`";
+            }
+        }
+
+        $list = $model->field($fields)->withTotalCount()->all($where);
         $total = $model->lastQueryResult()->getTotalCount();
 
         return [ResultConst::RESULT_LIST_KEY => $list, ResultConst::RESULT_TOTAL_KEY => $total];
