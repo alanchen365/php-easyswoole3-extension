@@ -63,10 +63,10 @@ class BaseController extends Controller
         $params = $this->getService()->adjustWhere($params);
 
         /** 查询列表 */
-        $depotList = $this->getService()->getAll($params, $page, [], [], []);
+        $dataList = $this->getService()->getAll($params, $page, [], [], []);
 
-        $result->set(ResultConst::RESULT_TOTAL_KEY, $depotList[ResultConst::RESULT_TOTAL_KEY]);
-        $result->set(ResultConst::RESULT_LIST_KEY, $depotList[ResultConst::RESULT_LIST_KEY]);
+        $result->set(ResultConst::RESULT_TOTAL_KEY, $dataList[ResultConst::RESULT_TOTAL_KEY]);
+        $result->set(ResultConst::RESULT_LIST_KEY, $dataList[ResultConst::RESULT_LIST_KEY]);
 
         Json::success();
     }
@@ -131,9 +131,9 @@ class BaseController extends Controller
         $id = $this->getService()->save($params);
 
         /** 查询插入的数据 */
-        $depot = $this->getService()->get(['id' => $id]);
+        $data = $this->getService()->get(['id' => $id]);
 
-        $result->set(ResultConst::RESULT_DATA_KEY, $depot);
+        $result->set(ResultConst::RESULT_DATA_KEY, $data);
 
         Json::success();
     }

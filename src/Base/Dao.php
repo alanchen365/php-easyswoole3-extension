@@ -19,7 +19,6 @@ trait Dao
         $params = $this->adjustWhere($params);
         $params = $this->model->autoCreateUser($params);
 
-        var_dump($params, '$params');
         return $this->model::create($params)->save();
     }
 
