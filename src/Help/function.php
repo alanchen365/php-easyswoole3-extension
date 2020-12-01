@@ -114,6 +114,30 @@ function identity()
     return Di::getInstance()->get(AppConst::HEADER_AUTH);
 }
 
+function setAppCode($appCode): void
+{
+    $ref = new \ReflectionClass(AppConst::class);
+    $headerAppCode = $ref->getConstant('HEADER_APP_CODE');
+
+    if (superEmpty($headerAppCode)) {
+        throw new \Es3\Exception\InfoException(1036, "App\Constant\AppConst常量中缺少 HEADER_APP_CODE 常量");
+    }
+
+    Di::getInstance()->set($headerAppCode, $appCode);
+}
+
+function appCode()
+{
+    $ref = new \ReflectionClass(AppConst::class);
+    $headerAppCode = $ref->getConstant('HEADER_APP_CODE');
+
+    if (superEmpty($headerAppCode)) {
+        throw new \Es3\Exception\InfoException(1035, "App\Constant\AppConst常量中缺少 HEADER_APP_CODE 常量");
+    }
+
+    return Di::getInstance()->get($headerAppCode);
+}
+
 function redisKey(string ...$key): string
 {
     if (superEmpty($key)) {
