@@ -60,8 +60,8 @@ class EasySwooleEvent
 
         /** 替换composer.json 确保每次测试环境自动更新 */
         if (!isProduction()) {
-            $composerJson = './composer.json';
-            file_put_contents($composerJson, ' ', FILE_APPEND);
+//            $composerJson = './composer.json';
+//            file_put_contents($composerJson, ' ', FILE_APPEND);
         }
 
         /** 目录不存在就创建 */
