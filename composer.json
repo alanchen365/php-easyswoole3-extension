@@ -7,10 +7,6 @@
   "minimum-stability": "dev",
   "require": {
     "php": ">=7.1",
-    "alanchen365/php-easyswoole3-pay": "*",
-    "alanchen365/callback-sdk-es3": "*",
-    "alanchen365/utility": "*",
-    "alanchen365/basic-sdk": "*",
     "easyswoole/pay": "1.2.*",
     "easyswoole/rpc": "4.0.*",
     "easyswoole/wechat": "v1.2.*",
