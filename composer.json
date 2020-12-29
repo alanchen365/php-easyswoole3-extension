@@ -7,7 +7,6 @@
   "minimum-stability": "dev",
   "require": {
     "php": ">=7.1",
-    "alanchen365/easyswoole3-extension": "*",
     "alanchen365/callback-sdk-es3": "*",
     "alanchen365/utility": "*",
     "viest/php-ext-xlswriter-ide-helper": "dev-master",
