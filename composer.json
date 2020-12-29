@@ -36,7 +36,6 @@
     "chillerlan/php-qrcode": "3.3.*",
     "smalot/pdfparser": "v0.17.1",
     "phpoffice/phpword": "0.17.0",
-    "huaweicloud/huaweicloud-sdk-php": "3.0.2-beta",
     "viest/php-ext-xlswriter-ide-helper": "dev-master",
     "ext-json": "*"
   },
