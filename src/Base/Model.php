@@ -44,21 +44,19 @@ class Model extends AbstractModel
         foreach ($columns as $key => $column) {
 
             /** 如果外界传进来user code 就不自动增加 */
-            if (array_intersect($paramsKeys, AppConst::TABLE_AUTO_CREATE_USER_CODE)) {
+            if (!array_intersect($paramsKeys, AppConst::TABLE_AUTO_CREATE_USER_CODE)) {
                 /** 增加user code */
                 if (in_array($key, AppConst::TABLE_AUTO_CREATE_USER_CODE) && createUserCode()) {
                     $params[$key] = createUserCode();
                 }
-            }
 
-            /** 如果外界传进来user name 就不自动增加 */
-            if (array_intersect($paramsKeys, AppConst::TABLE_AUTO_CREATE_USER_NAME)) {
                 /** 增加user name */
                 if (in_array($key, AppConst::TABLE_AUTO_CREATE_USER_NAME) && createUserName()) {
                     $params[$key] = createUserName();
                 }
             }
         }
+        
         return $params;
     }
 
