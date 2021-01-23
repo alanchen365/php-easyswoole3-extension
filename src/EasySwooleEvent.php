@@ -43,6 +43,9 @@ class EasySwooleEvent
     {
         date_default_timezone_set('Asia/Shanghai');
 
+        // 设置精度
+        ini_set('serialize_precision', 14);
+
         /** 加载配置文件 */
         \Es3\AutoLoad\Config::getInstance()->autoLoad();
 
