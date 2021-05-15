@@ -3,6 +3,7 @@
 namespace Es3;
 
 use App\Constant\AppConst;
+use App\Constant\EnvConst;
 use App\Constant\LoggerConst;
 use AsaEs\AsaEsConst;
 use EasySwoole\Component\Di;
@@ -13,6 +14,7 @@ use \EasySwoole\Http\Response;
 
 use EasySwoole\Log\LoggerInterface;
 use Es3\Handle\LoggerHandel;
+use Es3\Utility\File;
 
 class Middleware
 {
@@ -95,14 +97,34 @@ class Middleware
 
         /** 拼接一个简单的日志 */
         $runTime = round(floatval($runTime * 1000), 0);
-        $accessLog = $request->getUri() . ' | ' . clientIp() . ' | ' . $runTime . ' ms | ' . $request->getHeader('user-agent')[0];
+        $accessLog = [
+            EnvConst::SERVICE_NAME,
+            AppConst::APP_NAME,
+            traceCode(),
+            $request->getMethod(),
+            $request->getUri(),
+            clientIp(),
+            "{$runTime} ms",
+            $request->getHeader('user-agent')[0] ?? '',
+            json_encode(requestLog()),
+            json_encode(debug_backtrace()),
+        ];
+
+        $accessLog = implode($accessLog, '  |   ');
 
         /** 正常日志 */
-        $log = Logger::getInstance()->log($accessLog, LoggerInterface::LOG_LEVEL_INFO, LoggerConst::LOG_NAME_ACCESS);
+        Logger::getInstance()->log($accessLog, LoggerInterface::LOG_LEVEL_INFO, LoggerConst::LOG_NAME_ACCESS);
 
-        /** 慢日志 */
+        /** 单独记录慢日志 */
         if ($runTime > round(LoggerConst::LOG_SLOG_SECONDS * 1000, 0)) {
-            $log = Logger::getInstance()->log($accessLog, LoggerInterface::LOG_LEVEL_WARNING, LoggerConst::LOG_NAME_SLOG);
+
+            $logPath = \App\Constant\EnvConst::PATH_LOG . "/" . LoggerConst::LOG_NAME_SLOG;
+            $fileDate = date('Ymd', time());
+            $filePath = "{$logPath}/{$fileDate}.log";
+
+            clearstatcache();
+            is_dir($logPath) ? null : File::createDirectory($logPath, 0777);
+            file_put_contents($filePath, "{$accessLog}", FILE_APPEND | LOCK_EX);
         }
     }
 
