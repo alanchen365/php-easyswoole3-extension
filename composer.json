@@ -9,7 +9,7 @@
     "php": ">=7.1",
     "easyswoole/pay": "1.2.*",
     "easyswoole/rpc": "4.0.*",
-    "easyswoole/wechat": "v1.2.*",
+    "easyswoole/wechat": "2.x",
     "easyswoole/easyswoole": "3.3.*",
     "easyswoole/orm": "1.4.*",
     "easyswoole/swoole-ide-helper": "*",
