@@ -18,6 +18,7 @@ use EasySwoole\EasySwoole\Logger;
 use EasySwoole\EasySwoole\ServerManager;
 use EasySwoole\EasySwoole\Swoole\EventRegister;
 use EasySwoole\EasySwoole\SysConst;
+use EasySwoole\FastCache\Cache;
 use EasySwoole\Http\Request;
 use EasySwoole\Http\Response;
 use EasySwoole\Log\LoggerInterface;
@@ -193,6 +194,12 @@ class EasySwooleEvent
             $config->setNodeManager(new RedisManager($redisPool));
             \Es3\AutoLoad\Rpc::getInstance()->autoLoad($config);
         }
+
+        /** fast cache */
+        $config = new \EasySwoole\FastCache\Config();
+        $config->setTempDir(config('TEMP_DIR'));
+        $server = ServerManager::getInstance()->getSwooleServer();
+        Cache::getInstance($config)->attachToServer($server);
     }
 
     public static function onRequest(Request $request, Response $response)
