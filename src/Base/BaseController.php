@@ -6,6 +6,7 @@ use App\Constant\AppConst;
 use App\Constant\PageConst;
 use App\Constant\ResultConst;
 use App\Module\Owtb\Model\DepotModel;
+use EasySwoole\AtomicLimit\AtomicLimit;
 use EasySwoole\Component\Di;
 use EasySwoole\EasySwoole\Core;
 use EasySwoole\Http\AbstractInterface\Controller;
@@ -151,6 +152,9 @@ class BaseController extends Controller
             if ($service) {
                 $this->setService($service);
             }
+
+            /** 限流器 */
+            \Es3\Utility\AtomicLimit::getInstance()->access($this->request(), $this->response());
 
             return true;
         } catch (\Throwable $throwable) {

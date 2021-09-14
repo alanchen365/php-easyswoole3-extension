@@ -10,6 +10,7 @@ use App\Module\Callback\Queue\TaskErrorQueue;
 use App\Module\Callback\Queue\TaskFailQueue;
 use App\Module\Callback\Queue\TaskInvalidQueue;
 use App\Rpc\Oms;
+use EasySwoole\AtomicLimit\AtomicLimit;
 use EasySwoole\Component\Di;
 use EasySwoole\Console\Console;
 use EasySwoole\EasySwoole\Command\Utility;
@@ -116,35 +117,9 @@ class EasySwooleEvent
         /** 初始化自定义进程 */
         \Es3\AutoLoad\Process::getInstance()->autoLoad();
 
-//        $consoleName = EnvConst::SERVICE_NAME . '.console';
-//        ServerManager::getInstance()->addServer($consoleName, EnvConst::CONSOLE_PORT, SWOOLE_TCP, AppConst::SERVER_HOST, [
-//            'open_eof_check' => false
-//        ]);
-
-//        $consoleTcp = ServerManager::getInstance()->getSwooleServer($consoleName);
-//        $console = new Console($consoleName, EnvConst::CONSOLE_AUTH);
-
-        /* 注册日志模块 */
-//        $console->moduleContainer()->set(new LogPusher());
-//        $console->protocolSet($consoleTcp)->attachToServer(ServerManager::getInstance()->getSwooleServer());
-
-        /* 给es的日志推送加上hook */
-//        Logger::getInstance()->onLog()->set('remotePush', function ($msg, $logLevel, $category) use ($console) {
-//
-//            foreach ($console->allFd() as $item) {
-//                $console->send($item['fd'], $msg);
-//            }
-////
-////            if (Config::getInstance()->getConf('LOG_DIR')) {
-////                /*
-////                 * 可以在 LogPusher 模型的exec方法中，对loglevel，category进行设置，从而实现对日志等级，和分类的过滤推送
-////                 */
-////            }
-//        });
-
         /** 策略加载 */
-        Di::getInstance()->set(AppConst::DI_POLICY, Policy::getInstance()->initialize());
-
+        Di::getInstance()->set(AppConst::POLICY_CONF_IS_AUTH, Policy::getInstance()->initialize(AppConst::POLICY_CONF_IS_AUTH));
+        
         /** smarty */
         Render::getInstance()->getConfig()->setRender(new Smarty());
         Render::getInstance()->getConfig()->setTempDir(EASYSWOOLE_TEMP_DIR);
@@ -200,6 +175,9 @@ class EasySwooleEvent
         $config->setTempDir(config('TEMP_DIR'));
         $server = ServerManager::getInstance()->getSwooleServer();
         Cache::getInstance($config)->attachToServer($server);
+
+        /** 限流器 */
+        \Es3\AutoLoad\AtomicLimit::getInstance()->autoLoad();
     }
 
     public static function onRequest(Request $request, Response $response)

@@ -15,13 +15,12 @@ class Policy
 {
     use Singleton;
 
-    public function initialize(): \EasySwoole\Policy\Policy
+    public function initialize(string $name): \EasySwoole\Policy\Policy
     {
         $policy = new \EasySwoole\Policy\Policy();
-        $isAuthKey = strtolower('policy.' . AppConst::POLICY_CONF_IS_AUTH);
-        $policyConf = config($isAuthKey, true);
+        $isAuthKey = strtolower('policy.' . $name);
+        $policyConf = config($isAuthKey, true) ?? [];
         foreach ($policyConf as $key => $conf) {
-
             $policy->addPath($key, $conf);
         }
 
@@ -36,11 +35,11 @@ class Policy
      * @return bool
      * @throws \Throwable
      */
-    public function isAuth(): bool
+    public function isAuth(string $name): bool
     {
         $isAuth = true;
 
-        $policy = Di::getInstance()->get(AppConst::DI_POLICY);
+        $policy = Di::getInstance()->get($name);
         $request = Di::getInstance()->get(AppConst::DI_REQUEST);
 
         $uri = $request->getServerParams()['request_uri'];
