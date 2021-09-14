@@ -154,7 +154,7 @@ class BaseController extends Controller
             }
 
             /** 限流器 */
-            \Es3\Utility\AtomicLimit::getInstance()->access($this->request(), $this->response());
+            \Es3\Utility\AtomicLimit::getInstance()->url($this->request(), $this->response());
 
             return true;
         } catch (\Throwable $throwable) {

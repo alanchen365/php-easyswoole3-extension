@@ -16,12 +16,12 @@ class AtomicLimit
     use Singleton;
 
     /**
-     * 判断是否限流
+     * 针对url判断是否限流
      * @param Request $request
      * @param Response $response
      * @throws \Throwable
      */
-    public function access(Request $request, Response $response)
+    public function url(Request $request, Response $response)
     {
         $diAutoLimiter = (new \ReflectionClass(AppConst::class))->getConstant('DI_AUTO_LIMITER');
         if (superEmpty($diAutoLimiter)) {
@@ -29,7 +29,7 @@ class AtomicLimit
         }
 
         /** 获取配置 */
-        $configKey = AppConst::POLICY_CONF_ATOMIC_LIMIT;
+        $configKey = AppConst::POLICY_CONF_ATOMIC_LIMIT_URL;
         $atomicLimitConfig = config("policy.{$configKey}", true);
 
         /** 访问的url 配置的对应qps */
@@ -39,7 +39,7 @@ class AtomicLimit
         if (superEmpty($qps)) {
             return;
         }
-        
+
         /** @var \EasySwoole\AtomicLimit\AtomicLimit $limit */
         $limit = Di::getInstance()->get(AppConst::DI_AUTO_LIMITER);
         $isAstrict = !($limit->access($uri, $qps));
