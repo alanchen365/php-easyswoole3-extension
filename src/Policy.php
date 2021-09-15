@@ -35,11 +35,11 @@ class Policy
      * @return bool
      * @throws \Throwable
      */
-    public function isAuth(string $name): bool
+    public function isAuth(): bool
     {
         $isAuth = true;
 
-        $policy = Di::getInstance()->get($name);
+        $policy = Di::getInstance()->get(AppConst::POLICY_CONF_IS_AUTH);
         $request = Di::getInstance()->get(AppConst::DI_REQUEST);
 
         $uri = $request->getServerParams()['request_uri'];
