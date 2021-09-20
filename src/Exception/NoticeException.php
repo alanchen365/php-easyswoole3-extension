@@ -15,7 +15,7 @@ class NoticeException extends BaseException
             $data['request'] = requestLog();
         }
 
-        Logger::getInstance()->notice(json_encode($data), 'exception');
+        Logger::getInstance()->notice(jsonEncode($data), 'exception');
         parent::__construct($code, $msg, $previous);
     }
 }

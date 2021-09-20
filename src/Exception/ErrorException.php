@@ -14,7 +14,7 @@ class ErrorException extends BaseException
             $data['request'] = requestLog();
         }
         
-        Logger::getInstance()->error(json_encode($data), 'exception');
+        Logger::getInstance()->error(jsonEncode($data), 'exception');
         parent::__construct($code, $msg, $previous);
     }
 }

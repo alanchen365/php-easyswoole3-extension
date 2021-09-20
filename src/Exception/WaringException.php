@@ -15,7 +15,7 @@ class WaringException extends BaseException
             $data['request'] = requestLog();
             $data['trace'] = $this->getTrace();
         }
-        Logger::getInstance()->waring(json_encode($data), 'exception');
+        Logger::getInstance()->waring(jsonEncode($data), 'exception');
         parent::__construct($code, $msg, $previous);
     }
 }

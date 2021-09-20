@@ -24,7 +24,7 @@ class Policy
             $policy->addPath($key, $conf);
         }
 
-        echo Utility::displayItem($isAuthKey, json_encode($policyConf));
+        echo Utility::displayItem($isAuthKey, jsonEncode($policyConf));
         echo "\n";
 
         return $policy;

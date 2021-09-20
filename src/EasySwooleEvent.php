@@ -85,7 +85,7 @@ class EasySwooleEvent
         $mysqlConf = config('mysql', true);
         if (!superEmpty($mysqlConf)) {
 
-            echo Utility::displayItem('MysqlConf', json_encode($mysqlConf));
+            echo Utility::displayItem('MysqlConf', jsonEncode($mysqlConf));
             echo "\n";
 
             $config = new \EasySwoole\ORM\Db\Config($mysqlConf);
@@ -139,7 +139,7 @@ class EasySwooleEvent
         $redisConf = config('redis', true);
         if (superEmpty(!$redisConf)) {
             try {
-                echo Utility::displayItem('RedisConf', json_encode($redisConf));
+                echo Utility::displayItem('RedisConf', jsonEncode($redisConf));
                 echo "\n";
 
                 $redisConf = new \EasySwoole\Redis\Config\RedisConfig($redisConf);

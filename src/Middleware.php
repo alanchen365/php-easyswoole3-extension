@@ -106,8 +106,8 @@ class Middleware
             clientIp(),
             "{$runTime} ms",
             $request->getHeader('user-agent')[0] ?? '',
-            json_encode(requestLog()),
-            json_encode(debug_backtrace()),
+            jsonEncode(requestLog()),
+            jsonEncode(debug_backtrace()),
         ];
 
         $accessLog = implode($accessLog, '  |   ');

@@ -54,7 +54,7 @@ class Rpc
                 }
 
                 // 记录log
-                $error = 'rpc connection fail ! response:' . json_encode($response->toArray());
+                $error = 'rpc connection fail ! response:' . jsonEncode($response->toArray());
                 Logger::getInstance()->error($error, 'rpc_' . $service . '_' . $action);
             }
 
