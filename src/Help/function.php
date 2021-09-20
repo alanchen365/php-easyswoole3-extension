@@ -174,3 +174,8 @@ function createUserName()
 {
     return identity()[AppConst::IDENTITY_USER_NAME] ?? null;
 }
+
+function jsonEncode($value, $depth = 512): string
+{
+    return json_encode($value, JSON_UNESCAPED_UNICODE, $depth);
+}

@@ -37,7 +37,11 @@
     "chillerlan/php-qrcode": "3.3.*",
     "smalot/pdfparser": "v0.17.1",
     "phpoffice/phpword": "0.17.0",
-    "viest/php-ext-xlswriter-ide-helper": "*"
+    "viest/php-ext-xlswriter-ide-helper": "*",
+    "easyswoole/atomic-limit": "2.0.*",
+    "ext-simplexml": "*",
+    "ext-libxml": "*",
+    "ext-json": "*"
   },
   "autoload": {
     "psr-4": {
