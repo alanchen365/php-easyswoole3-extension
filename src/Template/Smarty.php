@@ -38,4 +38,20 @@ class Smarty implements RenderInterface
         trigger_error($msg);
         return $msg;
     }
+
+    /*
+     * 自定义配置
+     */
+    public function setConfig(string $option, $value)
+    {
+        $this->smarty->$option = $value;
+    }
+
+    /**
+     * 获取自定义配置
+     */
+    public function getConfig(string $option)
+    {
+        return $this->smarty->$option;
+    }
 }
