@@ -56,7 +56,7 @@ class Model extends AbstractModel
                 }
             }
         }
-        
+
         return $params;
     }
 

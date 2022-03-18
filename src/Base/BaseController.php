@@ -17,6 +17,7 @@ use EasySwoole\Validate\Validate;
 use Es3\AutoNew;
 use Es3\EsConfig;
 use Es3\EsUtility;
+use Es3\Exception\InfoException;
 use Es3\Exception\WaringException;
 use Es3\Output\Json;
 use Es3\Output\Result;
@@ -63,8 +64,11 @@ class BaseController extends Controller
         /** 去掉不属于该表之外的字段 */
         $params = $this->getService()->adjustWhere($params);
 
+        /** 默认排序 */
+        $orderBys = \Es3\Utility\Controller::getOrderBy($params);
+
         /** 查询列表 */
-        $dataList = $this->getService()->getAll($params, $page, [], [], []);
+        $dataList = $this->getService()->getAll($params, $page, $orderBys, [], []);
 
         $result->set(ResultConst::RESULT_TOTAL_KEY, $dataList[ResultConst::RESULT_TOTAL_KEY]);
         $result->set(ResultConst::RESULT_LIST_KEY, $dataList[ResultConst::RESULT_LIST_KEY]);
@@ -135,6 +139,35 @@ class BaseController extends Controller
         $data = $this->getService()->get(['id' => $id]);
 
         $result->set(ResultConst::RESULT_DATA_KEY, $data);
+
+        Json::success();
+    }
+
+    /**
+     * 按某一个字段分组
+     * @throws Throwable
+     * @throws InfoException
+     */
+    function group()
+    {
+        /** @var $result Result */
+        $result = Di::getInstance()->get(AppConst::DI_RESULT);
+
+        /** 获取分页参数  */
+        $page = $this->getPage();
+
+        /** 获取所有参数 */
+        $params = $this->getParams();
+        $column = $params['column'];
+
+        /** 默认排序 */
+        $orderBys = \Es3\Utility\Controller::getOrderBy($params);
+
+        /** 查询列表 */
+        $dataList = $this->getService()->getAll($params, $page, $orderBys, [$column], []);
+        $dataList = array_column($dataList[ResultConst::RESULT_LIST_KEY], $column);
+
+        $result->set(ResultConst::RESULT_LIST_KEY, $dataList);
 
         Json::success();
     }

@@ -131,6 +131,7 @@ trait Dao
     public function getAll($where = null, array $page = [], array $orderBys = [], array $groupBys = [], array $fields = [])
     {
         $model = $this->model::create();
+        $tableName = $model->getTableName();
         $LogicDelete = $this->model->getLogicDelete();
         $where = array_merge((array)$where, $LogicDelete);
         $where = $this->adjustWhere($where);
@@ -147,6 +148,11 @@ trait Dao
 
         if ($orderBys) {
             foreach ($orderBys as $key => $orderBy) {
+                /** 如果该字段在表中不存在 就报错 */
+                $isExist = \Es3\Utility\Model::columnIsExist($model, $key);
+                if (!$isExist) {
+                    throw new WaringException(1063, "无法按{$key}进行排序 数据表{$tableName}不存在{$key}字段");
+                }
                 $model->order($key, $orderBy);
             }
         }
