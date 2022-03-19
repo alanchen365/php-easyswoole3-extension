@@ -176,6 +176,20 @@ trait Dao
         return [ResultConst::RESULT_LIST_KEY => $list, ResultConst::RESULT_TOTAL_KEY => $total];
     }
 
+    public function switch(array $ids, string $column, string $switchRule): int
+    {
+        $model = $this->model::create();
+        $tableName = $model->getTableName();
+
+        /** 如果该字段在表中不存在 就报错 */
+        $isExist = \Es3\Utility\Model::columnIsExist($model, $column);
+        if (!$isExist) {
+            throw new WaringException(1063, "无法按{$column}进行切换状态 数据表{$tableName}不存在{$column}字段");
+        }
+
+        return $this->update([$column => $switchRule], $ids);
+    }
+
     public function truncate(): void
     {
         $schemaInfo = $this->model->schemaInfo();

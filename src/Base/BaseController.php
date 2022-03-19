@@ -15,6 +15,7 @@ use EasySwoole\Http\Message\Status;
 use EasySwoole\Trigger\Trigger;
 use EasySwoole\Validate\Validate;
 use Es3\AutoNew;
+use Es3\Constant\SwitchConst;
 use Es3\EsConfig;
 use Es3\EsUtility;
 use Es3\Exception\InfoException;
@@ -144,7 +145,7 @@ class BaseController extends Controller
     }
 
     /**
-     * 按某一个字段分组
+     * 对某一个字段分组
      * @throws Throwable
      * @throws InfoException
      */
@@ -169,6 +170,34 @@ class BaseController extends Controller
 
         $result->set(ResultConst::RESULT_LIST_KEY, $dataList);
 
+        Json::success();
+    }
+
+    /**
+     * 对某个字段切换状态
+     * @throws Throwable
+     * @throws InfoException
+     */
+    public function switch()
+    {
+        /** @var $result Result */
+        $result = Di::getInstance()->get(AppConst::DI_RESULT);
+
+        /** 获取参数 */
+        $params = $this->getParams();
+
+        $ids = $params['ids'] ?? null;
+        $switchColumn = $params[SwitchConst::KEY_SWITCH_COLUMN] ?? null;
+        $switchRule = $params[SwitchConst::KEY_SWITCH_RULE] ?? null;
+
+        if (superEmpty($ids) || superEmpty($switchColumn) || superEmpty($switchRule)) {
+            throw new InfoException(1432, "无法按{$switchColumn}切换状态 缺少必要参数");
+        }
+
+        /** 切换状态 */
+        $this->getService()->switch($ids, $switchColumn, $switchRule);
+
+        /** 返回结果 */
         Json::success();
     }
 

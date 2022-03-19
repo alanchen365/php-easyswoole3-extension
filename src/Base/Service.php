@@ -80,6 +80,11 @@ trait Service
         return $this->dao->deleteField($data);
     }
 
+    public function switch(array $ids, string $column, string $switchRule): int
+    {
+        return $this->dao->switch($ids, $column, $switchRule);
+    }
+
     /**
      * 截断表
      */
