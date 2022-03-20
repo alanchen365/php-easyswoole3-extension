@@ -22,7 +22,7 @@ class Controller
 
         /** 如果传递了 排序规则是否为 asc或者desc */
         $orderColumn = $params[OrderConst::KEY_ORDER_COLUMN];
-        $orderRule = $params[OrderConst::KEY_ORDER_RULE];
+        $orderRule = $params[OrderConst::KEY_ORDER_RULE] ?? 'desc';
 
         /** order rule的值是否合法 */
         if (!in_array(strtolower($orderRule), OrderConst::VAL_ORDER_RULE)) {

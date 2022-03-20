@@ -62,11 +62,11 @@ class BaseController extends Controller
         /** 获取所有参数 */
         $params = $this->getParams();
 
-        /** 去掉不属于该表之外的字段 */
-        $params = $this->getService()->adjustWhere($params);
-
         /** 默认排序 */
         $orderBys = \Es3\Utility\Controller::getOrderBy($params);
+
+        /** 去掉不属于该表之外的字段 */
+        $params = $this->getService()->adjustWhere($params);
 
         /** 查询列表 */
         $dataList = $this->getService()->getAll($params, $page, $orderBys, [], []);
