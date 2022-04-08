@@ -11,6 +11,8 @@ class Result
 {
     private $_code;
     private $_msg;
+    private $_file;
+    private $_line;
     private $_result;
     private $_trace;
 
@@ -63,6 +65,38 @@ class Result
         $this->_result[$key] = $value;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getFile()
+    {
+        return $this->_file;
+    }
+
+    /**
+     * @param mixed $file
+     */
+    public function setFile($file): void
+    {
+        $this->_file = $file;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLine()
+    {
+        return $this->_line;
+    }
+
+    /**
+     * @param mixed $line
+     */
+    public function setLine($line): void
+    {
+        $this->_line = $line;
+    }
+
     public function toArray(): array
     {
         $result = empty($this->_result) ? (object)[] : $this->_result;
@@ -71,6 +105,8 @@ class Result
             ResultConst::CODE_KEY => $this->_code,
             ResultConst::DATE_KEY => $result,
             ResultConst::MSG_KEY => $this->_msg,
+            'file' => strstr($this->_file, "/App/"),
+            'line' => $this->_line,
 //            ResultConst::TRACE_KEY => $this->_trace,
             ResultConst::TIME_KEY => date(ResultConst::TIME_FORMAT),
             AppConst::DI_TRACE_CODE => Di::getInstance()->get(AppConst::DI_TRACE_CODE),

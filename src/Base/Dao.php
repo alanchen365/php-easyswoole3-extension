@@ -259,7 +259,7 @@ trait Dao
         if (strstr($sql, 'SQL_CALC_FOUND_ROWS')) {
             return [ResultConst::RESULT_LIST_KEY => $list, ResultConst::RESULT_TOTAL_KEY => $total];
         }
-
+        
         return $list;
     }
 

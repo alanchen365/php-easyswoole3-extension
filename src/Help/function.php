@@ -179,3 +179,29 @@ function jsonEncode($value, $depth = 512): string
 {
     return json_encode($value, JSON_UNESCAPED_UNICODE, $depth);
 }
+
+/**
+ * 变量调试
+ * @param $val
+ * @param bool $isExit
+ * @param bool $showJson
+ */
+function dump($val, bool $isExit = false, bool $showJson = false): void
+{
+    // 此函数不在生产环境执行
+    if (isProduction()) {
+        return;
+    }
+
+    if ($showJson) {
+        $val = jsonEncode($val);
+    }
+
+    var_dump($val);
+
+    // 不是生产环境，并且停止
+    if (!isProduction() && $isExit) {
+        echo "调试模式下 进程退出";
+        exit();
+    }
+}

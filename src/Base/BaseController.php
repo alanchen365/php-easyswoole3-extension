@@ -84,7 +84,6 @@ class BaseController extends Controller
 
         /** 获取参数 参数调整 */
         $params = $this->getParams();
-        $LogicDelete = $this->getService()->getLogicDelete();
 
         /** 先查一下 不存在就报错 */
         $id = $params['id'] ?? null;
@@ -95,6 +94,31 @@ class BaseController extends Controller
 
         /** 执行删除 */
         $total = $this->getService()->delete([$id]);
+        $result->set(ResultConst::RESULT_TOTAL_KEY, $total);
+
+        Json::success();
+    }
+
+    /**
+     * 批量删除
+     * @throws \Es3\Exception\WaringException
+     * @throws \Throwable
+     */
+    function batchDelete()
+    {
+        /** @var $result Result */
+        $result = Di::getInstance()->get(AppConst::DI_RESULT);
+
+        /** 获取参数 参数调整 */
+        $params = $this->getParams();
+
+        $ids = $params['ids'] ?? null;
+        if (superEmpty($ids) && is_array($ids)) {
+            throw new WaringException(1109, "请传递ids 并且ids必须为数组");
+        }
+
+        /** 执行删除 */
+        $total = $this->getService()->delete($ids);
         $result->set(ResultConst::RESULT_TOTAL_KEY, $total);
 
         Json::success();
@@ -140,6 +164,26 @@ class BaseController extends Controller
         $data = $this->getService()->get(['id' => $id]);
 
         $result->set(ResultConst::RESULT_DATA_KEY, $data);
+
+        Json::success();
+    }
+
+    function batchUpdate()
+    {
+        /** @var $result Result */
+        $result = Di::getInstance()->get(AppConst::DI_RESULT);
+
+        /** 获取参数 参数调整 */
+        $params = $this->getParams();
+
+        $ids = $params['ids'] ?? null;
+        if (superEmpty($ids) && is_array($ids)) {
+            throw new WaringException(1110, "请传递ids 并且ids必须为数组");
+        }
+        
+        // todo 敏感参数自行过滤
+        $total = $this->getService()->update($params, $ids);
+        $result->set(ResultConst::RESULT_TOTAL_KEY, $total);
 
         Json::success();
     }

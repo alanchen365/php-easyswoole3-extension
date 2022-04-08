@@ -42,6 +42,9 @@ class Json
     public static function fail(\Throwable $throwable, int $code = ResultConst::FAIL_CODE, string $msg = ResultConst::FAIL_MSG): void
     {
         Di::getInstance()->get(AppConst::DI_RESULT)->setTrace($throwable->getTrace());
+        Di::getInstance()->get(AppConst::DI_RESULT)->setFile($throwable->getFile());
+        Di::getInstance()->get(AppConst::DI_RESULT)->setLine($throwable->getLine());
+
         Json::setBody($code, $msg, false);
     }
 
@@ -74,7 +77,7 @@ class Json
         ];
 
         Logger::getInstance()->log(jsonEncode($save), LoggerInterface::LOG_LEVEL_INFO, LoggerConst::LOG_NAME_REQUEST_RESPONSE);
-        
+
         $response->withHeader('Content-type', 'application/json;charset=utf-8');
         $response->write(jsonEncode($data));
         $response->end();
