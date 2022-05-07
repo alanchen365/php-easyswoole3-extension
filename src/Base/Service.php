@@ -4,6 +4,7 @@ namespace Es3\Base;
 
 use App\Constant\AppConst;
 use EasySwoole\Component\Di;
+use EasySwoole\Mysqli\QueryBuilder;
 use Es3\Exception\WaringException;
 
 trait Service

@@ -15,6 +15,7 @@ use EasySwoole\Http\Message\Status;
 use EasySwoole\Trigger\Trigger;
 use EasySwoole\Validate\Validate;
 use Es3\AutoNew;
+use Es3\Constant\EsConst;
 use Es3\Constant\SwitchConst;
 use Es3\EsConfig;
 use Es3\EsUtility;
@@ -30,6 +31,7 @@ use Es3\Proxy\ValidateProxy;
 class BaseController extends Controller
 {
     protected $service;
+
 
     function get()
     {
@@ -180,7 +182,7 @@ class BaseController extends Controller
         if (superEmpty($ids) && is_array($ids)) {
             throw new WaringException(1110, "请传递ids 并且ids必须为数组");
         }
-        
+
         // todo 敏感参数自行过滤
         $total = $this->getService()->update($params, $ids);
         $result->set(ResultConst::RESULT_TOTAL_KEY, $total);
@@ -231,17 +233,50 @@ class BaseController extends Controller
         $params = $this->getParams();
 
         $ids = $params['ids'] ?? null;
-        $switchColumn = $params[SwitchConst::KEY_SWITCH_COLUMN] ?? null;
-        $switchRule = $params[SwitchConst::KEY_SWITCH_RULE] ?? null;
+        $column = $params[EsConst::ES_KEY_COLUMN] ?? null;
+        $value = $params[EsConst::ES_KEY_VALUE] ?? null;
 
-        if (superEmpty($ids) || superEmpty($switchColumn) || superEmpty($switchRule)) {
-            throw new InfoException(1432, "无法按{$switchColumn}切换状态 缺少必要参数");
+        if (superEmpty($ids) || superEmpty($column) || superEmpty($value)) {
+            throw new InfoException(1432, "无法按{$column}切换状态 缺少必要参数");
         }
-
+        
         /** 切换状态 */
-        $this->getService()->switch($ids, $switchColumn, $switchRule);
+        $this->getService()->switch($ids, $column, $value);
 
         /** 返回结果 */
+        Json::success();
+    }
+
+    /**
+     * 专门给下拉出的api
+     */
+    public function option()
+    {
+        /** @var $result Result */
+        $result = Di::getInstance()->get(AppConst::DI_RESULT);
+
+        /** 获取分页参数  */
+        $page = $this->getPage();
+
+        /** 获取所有参数 */
+        $params = $this->getParams();
+        $column = $params['column'];
+        $value = $params['value'] ?? null;
+
+        /** 设置模糊查询及兼容数组 */
+        $searchParams = [];
+        if (!superEmpty($value)) {
+            $searchParams = [$column => ["%$value%", 'like', 'IN']];
+        }
+//        dump($searchParams);
+//        exit;
+
+        /** 查询列表 */
+        $dataList = $this->getService()->getAll($searchParams, [], [], [], ['id', $column]);
+
+        $result->set(ResultConst::RESULT_TOTAL_KEY, $dataList[ResultConst::RESULT_TOTAL_KEY]);
+        $result->set(ResultConst::RESULT_LIST_KEY, $dataList[ResultConst::RESULT_LIST_KEY]);
+
         Json::success();
     }
 

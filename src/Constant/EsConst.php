@@ -16,4 +16,8 @@ class EsConst
     const ES_DIRECTORY_EVENT_NAME = 'Event';
     const ES_FILE_NAME_ROUTER = 'router.php';
     const ES_FILE_NAME_EVENT = 'Event.php';
+
+    /** 字段key定义 */
+    const ES_KEY_COLUMN = 'column';
+    const ES_KEY_VALUE = 'value';
 }
