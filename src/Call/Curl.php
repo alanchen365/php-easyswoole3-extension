@@ -2,6 +2,7 @@
 
 namespace Es3\Call;
 
+use EasySwoole\Component\Di;
 use EasySwoole\HttpClient\Bean\Response;
 use  EasySwoole\HttpClient\HttpClient;
 use Es3\Exception\ErrorException;
@@ -69,17 +70,37 @@ class Curl extends HttpClient
 
     private function isSuccess(Response $response)
     {
-        $errCode = $response->getErrCode();
-        if ($errCode !== 0) {
-            throw new ErrorException(1021, '远程网络异常:' . $response->getErrMsg());
+        try {
+            $errCode = $response->getErrCode();
+            if ($errCode !== 0) {
+                throw new ErrorException(1021, '远程网络异常:' . $response->getErrMsg());
+            }
+
+        } catch (\Throwable $throwable) {
+
+            $trace = $throwable->getTrace()[2] ?? null;
+            Di::getInstance()->set(\Es3\Constant\ResultConst::FILE_KEY, $trace['file'] ?? null . $trace['function'] ?? null);
+            Di::getInstance()->set(\Es3\Constant\ResultConst::LINE_KEY, $trace['line'] ?? null);
+
+            throw new ErrorException($throwable->getCode(), $throwable->getMessage());
         }
     }
 
     private function is200(Response $response)
     {
-        $code = $response->getStatusCode();
-        if (200 != $code) {
-            throw new ErrorException(1020, '远程网络连接失败 http_code:' . $code . ' ' . $response->getBody());
+        try {
+            $code = $response->getStatusCode();
+            if (200 != $code) {
+                throw new ErrorException(1020, '远程网络连接失败 http_code:' . $code . ' ' . $response->getBody());
+            }
+
+        } catch (\Throwable $throwable) {
+
+            $trace = $throwable->getTrace()[2] ?? null;
+            Di::getInstance()->set(\Es3\Constant\ResultConst::FILE_KEY, $trace['file'] ?? null . $trace['function'] ?? null);
+            Di::getInstance()->set(\Es3\Constant\ResultConst::LINE_KEY, $trace['line'] ?? null);
+
+            throw new ErrorException($throwable->getCode(), $throwable->getMessage());
         }
     }
 

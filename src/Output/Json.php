@@ -42,8 +42,8 @@ class Json
     public static function fail(\Throwable $throwable, int $code = ResultConst::FAIL_CODE, string $msg = ResultConst::FAIL_MSG): void
     {
         Di::getInstance()->get(AppConst::DI_RESULT)->setTrace($throwable->getTrace());
-        Di::getInstance()->get(AppConst::DI_RESULT)->setFile($throwable->getFile());
-        Di::getInstance()->get(AppConst::DI_RESULT)->setLine($throwable->getLine());
+//        Di::getInstance()->get(AppConst::DI_RESULT)->setFile($throwable->getFile());
+//        Di::getInstance()->get(AppConst::DI_RESULT)->setLine($throwable->getLine());
 
         Json::setBody($code, $msg, false);
     }
@@ -68,15 +68,17 @@ class Json
         $result->setMsg(strval($msg));
         $result->setCode(intval($code));
 
+        $result->setFile(Di::getInstance()->get(\Es3\Constant\ResultConst::FILE_KEY));
+        $result->setLine(Di::getInstance()->get(\Es3\Constant\ResultConst::LINE_KEY));
+
         $data = $result->toArray();
 
         /** 记录请求log */
-        $save = [
-            'request' => requestLog(),
-            'response' => ['response_code' => $code, 'response_msg' => $msg]
-        ];
+        Di::getInstance()->set(\Es3\Constant\ResultConst::RESPONSE_KEY,
+            ['response_code' => $code, 'response_msg' => $msg, 'http_code' => $response->getStatusCode()]
+        );
 
-        Logger::getInstance()->log(jsonEncode($save), LoggerInterface::LOG_LEVEL_INFO, LoggerConst::LOG_NAME_REQUEST_RESPONSE);
+        Logger::getInstance()->log(jsonEncode(['code' => $code, 'msg' => $msg]), LoggerInterface::LOG_LEVEL_INFO, LoggerConst::LOG_NAME_REQUEST_RESPONSE);
 
         $response->withHeader('Content-type', 'application/json;charset=utf-8');
         $response->write(jsonEncode($data));

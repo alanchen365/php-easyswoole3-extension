@@ -5,6 +5,7 @@ namespace Es3\Handle;
 use App\Constant\EnvConst;
 use EasySwoole\Http\Request;
 use EasySwoole\Http\Response;
+use Es3\Log\LogBean;
 use Es3\Output\Json;
 
 use EasySwoole\Log\LoggerInterface;
@@ -23,8 +24,24 @@ class LoggerHandel implements LoggerInterface
         $this->logDir = strtolower($logDir);
     }
 
+    /**
+     * 程序中所有的log都会走到这里
+     * @param string|null $msg
+     * @param int $logLevel
+     * @param string $category
+     * @return string
+     */
     function log(?string $msg, int $logLevel = self::LOG_LEVEL_INFO, string $category = 'debug'): string
     {
+        // 对日志赋值
+        $logbean = new LogBean();
+        // 设置日志等级
+        $logbean->setLevel(strtolower($this->levelMap($logLevel)));
+        // 设置日志分类
+        $logbean->setCategory($category);
+        // 设置日志内容
+        $logbean->setMsg($msg);
+
         $date = date('Y-m-d H:i:s');
         $category = strtolower($category);
         $project = strtolower(EnvConst::SERVICE_NAME);
@@ -39,18 +56,19 @@ class LoggerHandel implements LoggerInterface
 
         /** 是否传递分类的特殊处理 */
         $traceCode = Trace::getRequestId();
-        $str = "[{$project}][{$date}][{$traceCode}][{$category}][{$levelStr}] : [{$msg}]\n";
 
+//        $str = "[{$project}][{$date}][{$traceCode}][{$category}][{$levelStr}] : [{$msg}]\n";
+        $str = jsonEncode($logbean->toArray()) . "\n";
         file_put_contents($filePath, "{$str}", FILE_APPEND | LOCK_EX);
         return $str;
     }
 
     function console(?string $msg, int $logLevel = self::LOG_LEVEL_INFO, string $category = 'console')
     {
-        $date = date('Y-m-d H:i:s');
-        $levelStr = $this->levelMap($logLevel);
-        $temp = "[{$date}][{$category}][{$levelStr}]:[{$msg}]\n";
-        fwrite(STDOUT, $temp);
+//        $date = date('Y-m-d H:i:s');
+//        $levelStr = $this->levelMap($logLevel);
+//        $temp = "[{$date}][{$category}][{$levelStr}]:[{$msg}]\n";
+//        fwrite(STDOUT, $temp);
     }
 
     private function levelMap(int $level): string

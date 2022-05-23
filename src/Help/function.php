@@ -78,30 +78,31 @@ function clientIp(): ?string
 
 function requestLog(): ?array
 {
-    if (isHttp()) {
-        $request = Di::getInstance()->get(AppConst::DI_REQUEST);
-
-        $swooleRequest = (array)$request->getSwooleRequest();
-        $raw = $request->getBody()->__toString();
-
-        $headerServer1 = array_merge($swooleRequest['header'] ?? [], $swooleRequest['server'] ?? []);
-        $headerServer2 = [
-            'fd' => $swooleRequest['fd'] ?? null,
-            'request' => $swooleRequest['request'] ?? null,
-            'cookie' => $swooleRequest['cookie'] ?? null,
-            'get_params' => $swooleRequest['get'] ?? null,
-            'post_params' => $swooleRequest['post'] ?? null,
-            'raw' => $raw,
-            'files_params' => $swooleRequest['files'] ?? null,
-            'tmpfiles' => $swooleRequest['tmpfiles'] ?? null,
-        ];
-        $headerServer = array_merge($headerServer1, $headerServer2);
-        $headerServer['trace_code'] = Trace::getRequestId();
-
-        return $headerServer;
+    if (!isHttp()) {
+        return null;
     }
 
-    return null;
+    $request = Di::getInstance()->get(AppConst::DI_REQUEST);
+
+    $swooleRequest = (array)$request->getSwooleRequest();
+    $raw = $request->getBody()->__toString();
+
+    $headerServer1 = array_merge($swooleRequest['header'] ?? [], $swooleRequest['server'] ?? []);
+    $headerServer2 = [
+        'fd' => $swooleRequest['fd'] ?? null,
+        'request' => $swooleRequest['request'] ?? null,
+        'cookie' => $swooleRequest['cookie'] ?? null,
+        'get_params' => $swooleRequest['get'] ?? null,
+        'post_params' => $swooleRequest['post'] ?? null,
+        'raw' => $raw,
+        'files_params' => $swooleRequest['files'] ?? null,
+        'tmpfiles' => $swooleRequest['tmpfiles'] ?? null,
+    ];
+    $headerServer = array_merge($headerServer1, $headerServer2);
+    $headerServer['trace_code'] = Trace::getRequestId();
+
+    return $headerServer;
+
 }
 
 function setIdentity($identity): void
@@ -204,4 +205,22 @@ function dump($val, bool $isExit = false, bool $showJson = false): void
         echo "调试模式下 进程退出";
         exit();
     }
+}
+
+/**
+ * 获取日志扩展字段
+ */
+function getLogExtend()
+{
+    Di::getInstance()->get(\Es3\Constant\ResultConst::EXTEND_ID_KEY);
+}
+
+/**
+ * 设置日志扩展字段
+ */
+function setLogExtend(string $extendId)
+{
+    // 长度不能超过50个字符
+    $extendId = mb_substr($extendId, 50);
+    Di::getInstance()->set(\Es3\Constant\ResultConst::EXTEND_ID_KEY, $extendId);
 }

@@ -3,11 +3,13 @@
 namespace Es3\Base;
 
 use App\Constant\ResultConst;
+use EasySwoole\Component\Di;
 use EasySwoole\ORM\Db\ClientInterface;
 use EasySwoole\ORM\DbManager;
 use Es3\Exception\ErrorException;
 use EasySwoole\Mysqli\QueryBuilder;
 use Es3\Exception\WaringException;
+use function PHPUnit\Framework\any;
 
 trait Dao
 {
@@ -235,32 +237,40 @@ trait Dao
         $this->model = $model;
     }
 
-    public function query(string $sql, ?array $param = [], bool $isOne = false, array $queryOption = [], bool $raw = false, string $connection = 'default'): array
+    public function query(string $sql, ?array $param = [], bool $isOne = false, array $queryOption = [], bool $raw = false, string $connection = 'default'): ?array
     {
-        /** 计算总行数查询条件 */
-        if (strstr($sql, 'SQL_CALC_FOUND_ROWS')) {
-            $queryOption[] = 'SQL_CALC_FOUND_ROWS';
+        try {
+            /** 计算总行数查询条件 */
+            if (strstr($sql, 'SQL_CALC_FOUND_ROWS')) {
+                $queryOption[] = 'SQL_CALC_FOUND_ROWS';
+            }
+
+            $queryBuild = new QueryBuilder();
+            $queryBuild->setQueryOption($queryOption);
+            $queryBuild->raw($sql, $param);
+
+            $results = DbManager::getInstance()->query($queryBuild, $raw, $connection);
+
+            if ($isOne) {
+                $total = 1;
+                $list = $results->getResultOne();
+            } else {
+                $list = $results->getResult();
+                $total = $results->getTotalCount();
+            }
+
+            if (strstr($sql, 'SQL_CALC_FOUND_ROWS')) {
+                return [ResultConst::RESULT_LIST_KEY => $list, ResultConst::RESULT_TOTAL_KEY => $total];
+            }
+
+            return $list;
+        } catch (\Throwable $throwable) {
+
+            $trace = $throwable->getTrace()[2] ?? null;
+            Di::getInstance()->set(\Es3\Constant\ResultConst::FILE_KEY, $trace['file'] ?? null . $trace['function'] ?? null);
+            Di::getInstance()->set(\Es3\Constant\ResultConst::LINE_KEY, $trace['line'] ?? null);
+            throw new ErrorException($throwable->getCode(), $throwable->getMessage());
         }
-
-        $queryBuild = new QueryBuilder();
-        $queryBuild->setQueryOption($queryOption);
-        $queryBuild->raw($sql, $param);
-
-        $results = DbManager::getInstance()->query($queryBuild, $raw, $connection);
-
-        if ($isOne) {
-            $total = 1;
-            $list = $results->getResultOne();
-        } else {
-            $list = $results->getResult();
-            $total = $results->getTotalCount();
-        }
-
-        if (strstr($sql, 'SQL_CALC_FOUND_ROWS')) {
-            return [ResultConst::RESULT_LIST_KEY => $list, ResultConst::RESULT_TOTAL_KEY => $total];
-        }
-        
-        return $list;
     }
 
     public function exec(string $sql, ?array $param = [], bool $raw = true, string $connection = 'default'): array

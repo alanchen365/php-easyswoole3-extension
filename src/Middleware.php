@@ -91,29 +91,26 @@ class Middleware
     {
         /** 从请求里获取之前增加的时间戳 */
         $reqTime = $request->getAttribute(LoggerConst::LOG_NAME_ACCESS);
-
         /** 计算一下运行时间  */
         $runTime = round(microtime(true) - $reqTime, 5);
-
         /** 拼接一个简单的日志 */
         $runTime = round(floatval($runTime * 1000), 0);
-        $accessLog = [
-            EnvConst::SERVICE_NAME,
-            AppConst::APP_NAME,
-            traceCode(),
-            $request->getMethod(),
-            $request->getUri(),
-            clientIp(),
-            "{$runTime} ms",
-            $request->getHeader('user-agent')[0] ?? '',
-            jsonEncode(requestLog()),
-            jsonEncode(debug_backtrace()),
-        ];
-
-        $accessLog = implode($accessLog, '  |   ');
+//        $accessLog = [
+////            EnvConst::SERVICE_NAME,
+////            AppConst::APP_NAME,
+////            traceCode(),
+//            $request->getMethod(),
+//            $request->getUri(),
+//            "{$runTime} ms",
+////            $request->getHeader('user-agent')[0] ?? '',
+////            jsonEncode(requestLog()),
+////            jsonEncode(debug_backtrace()),
+//        ];
+//
+//        $accessLog = implode($accessLog, '  |   ');
 
         /** 正常日志 */
-        Logger::getInstance()->log($accessLog, LoggerInterface::LOG_LEVEL_INFO, LoggerConst::LOG_NAME_ACCESS);
+//        Logger::getInstance()->log(jsonEncode($accessLog), LoggerInterface::LOG_LEVEL_INFO, LoggerConst::LOG_NAME_ACCESS);
 
         /** 单独记录慢日志 */
         if ($runTime > round(LoggerConst::LOG_SLOG_SECONDS * 1000, 0)) {
@@ -121,16 +118,16 @@ class Middleware
             $logPath = \App\Constant\EnvConst::PATH_LOG . "/" . LoggerConst::LOG_NAME_SLOG;
             $fileDate = date('Ymd', time());
             $filePath = "{$logPath}/{$fileDate}.log";
-
+            
             clearstatcache();
             is_dir($logPath) ? null : File::createDirectory($logPath, 0777);
-            file_put_contents($filePath, "{$accessLog}", FILE_APPEND | LOCK_EX);
+            file_put_contents($filePath, "{$runTime} ms", FILE_APPEND | LOCK_EX);
         }
     }
 
     private function access(Request $request, $response)
     {
-        $accessLog = $request->getUri() . ' | ' . clientIp() . ' | ' . $request->getHeader('user-agent')[0];
-        Logger::getInstance()->log($accessLog, LoggerInterface::LOG_LEVEL_INFO, LoggerConst::LOG_NAME_ACCESS);
+//        $accessLog = $request->getUri() . ' | ' . $request->getHeader('user-agent')[0];
+//        Logger::getInstance()->log($accessLog, LoggerInterface::LOG_LEVEL_INFO, LoggerConst::LOG_NAME_ACCESS);
     }
 }
