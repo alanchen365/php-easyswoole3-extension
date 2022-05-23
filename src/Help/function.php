@@ -26,7 +26,7 @@ function config($keyPath = '', $env = false)
 
 function isHttp()
 {
-    $workId = \EasySwoole\EasySwoole\ServerManager::getInstance()->getSwooleServer()->worker_id;
+    $workId = \EasySwoole\EasySwoole\ServerManager::getInstance()->getSwooleServer()->worker_id ?? null;
 
     if ($workId < 0) {
         return false;
