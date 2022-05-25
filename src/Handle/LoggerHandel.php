@@ -62,10 +62,10 @@ class LoggerHandel implements LoggerInterface
         // 通过日志分类截取日志负责人
         $categoryLen = mb_strlen($category);
         $leaderName = null;
-        if (strpos($category, '_') && $categoryLen > 3) {
-            $leaderName = explode('_', $category);
-            $leaderName = current($leaderName) ?? null;
-        }
+//        if (strpos($category, '_') && $categoryLen > 3) {
+//            $leaderName = explode('_', $category);
+//            $leaderName = current($leaderName) ?? null;
+//        }
 
         if (strpos($category, '-') && $categoryLen > 3) {
             $leaderName = explode('-', $category);
@@ -74,7 +74,7 @@ class LoggerHandel implements LoggerInterface
 
         // 设置负责人名称
         $logbean->setLeaderName($leaderName);
-        
+
 //        $str = "[{$project}][{$date}][{$traceCode}][{$category}][{$levelStr}] : [{$msg}]\n";
         $str = jsonEncode($logbean->toArray()) . "\n";
         file_put_contents($filePath, "{$str}", FILE_APPEND | LOCK_EX);
