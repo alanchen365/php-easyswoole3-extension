@@ -14,6 +14,8 @@ use Es3\Utility\File;
 
 class LoggerHandel implements LoggerInterface
 {
+    const LOG_LEVEL_WARNING_CENTER = 5;
+
     private $logDir;
 
     function __construct(string $logDir = null)
@@ -65,10 +67,10 @@ class LoggerHandel implements LoggerInterface
 
     function console(?string $msg, int $logLevel = self::LOG_LEVEL_INFO, string $category = 'console')
     {
-//        $date = date('Y-m-d H:i:s');
-//        $levelStr = $this->levelMap($logLevel);
-//        $temp = "[{$date}][{$category}][{$levelStr}]:[{$msg}]\n";
-//        fwrite(STDOUT, $temp);
+        $date = date('Y-m-d H:i:s');
+        $levelStr = $this->levelMap($logLevel);
+        $temp = "[{$date}][{$category}][{$levelStr}]:[{$msg}]\n";
+        fwrite(STDOUT, $temp);
     }
 
     private function levelMap(int $level): string
@@ -82,6 +84,8 @@ class LoggerHandel implements LoggerInterface
                 return 'warning';
             case self::LOG_LEVEL_ERROR:
                 return 'error';
+            case self::LOG_LEVEL_WARNING_CENTER:
+                return 'warning_center';
             default:
                 return 'unknown';
         }

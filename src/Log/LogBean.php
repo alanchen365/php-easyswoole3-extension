@@ -78,7 +78,7 @@ class LogBean extends \EasySwoole\Spl\SplBean
             $runTime = round(floatval($runTime * 1000), 0);
             $this->setRunTime($runTime . 'ms');
         }
-
+        
         parent::__construct($data, $autoCreateProperty);
     }
 

@@ -76,7 +76,7 @@ class Model extends AbstractModel
                 }
             }
 
-            if (array_intersect($paramsKeys, AppConst::TABLE_AUTO_CREATE_USER_NAME)) {
+            if (array_intersect($paramsKeys, AppConst::TABLE_AUTO_UPDATE_USER_NAME)) {
                 /** 增加user name */
                 if (in_array($key, AppConst::TABLE_AUTO_UPDATE_USER_NAME) && createUserName()) {
                     $params[$key] = createUserName();
