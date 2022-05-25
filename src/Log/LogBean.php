@@ -36,6 +36,7 @@ class LogBean extends \EasySwoole\Spl\SplBean
     protected $serverIp;
     protected $clientIp;
     protected $runTime;
+    protected $leaderName;
 
     function __construct(array $data = null, $autoCreateProperty = false)
     {
@@ -368,5 +369,21 @@ class LogBean extends \EasySwoole\Spl\SplBean
     public function setRunTime($runTime): void
     {
         $this->runTime = $runTime;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLeaderName()
+    {
+        return $this->leaderName;
+    }
+
+    /**
+     * @param mixed $leaderName
+     */
+    public function setLeaderName($leaderName): void
+    {
+        $this->leaderName = $leaderName;
     }
 }
