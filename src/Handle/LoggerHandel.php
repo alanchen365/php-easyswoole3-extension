@@ -16,6 +16,10 @@ class LoggerHandel implements LoggerInterface
 {
     const LOG_LEVEL_WARNING_CENTER = 5;
 
+    protected $trace;  //抛出异常时的调用过程
+    protected $file;  //抛出日志的文件
+    protected $line;  //抛出日志的文件代码行号
+
     private $logDir;
 
     function __construct(string $logDir = null)
@@ -43,6 +47,10 @@ class LoggerHandel implements LoggerInterface
         $logbean->setCategory($category);
         // 设置日志内容
         $logbean->setMsg($msg);
+
+        $logbean->setFile($this->file);
+        $logbean->setLine($this->line);
+        $logbean->setTrace($this->trace);
 
         $date = date('Y-m-d H:i:s');
         $category = strtolower($category);
@@ -77,6 +85,7 @@ class LoggerHandel implements LoggerInterface
 
 //        $str = "[{$project}][{$date}][{$traceCode}][{$category}][{$levelStr}] : [{$msg}]\n";
         $str = jsonEncode($logbean->toArray()) . "\n";
+
         file_put_contents($filePath, "{$str}", FILE_APPEND | LOCK_EX);
         return $str;
     }
@@ -105,5 +114,71 @@ class LoggerHandel implements LoggerInterface
             default:
                 return 'unknown';
         }
+    }
+
+    public function mapToLevel(string $map): int
+    {
+        switch ($map) {
+            case 'info':
+                return 2;
+            case 'notice':
+                return 2;
+            case 'warning':
+                return 3;
+            case 'error':
+                return 4;
+            case 'warning_center':
+                return 5;
+            default:
+                return -1;
+        }
+    }
+
+    /**
+     * @param mixed $trace
+     */
+    public function setTrace($trace): void
+    {
+        $this->trace = $trace;
+    }
+
+    /**
+     * @param mixed $file
+     */
+    public function setFile($file): void
+    {
+        $this->file = $file;
+    }
+
+    /**
+     * @param mixed $line
+     */
+    public function setLine($line): void
+    {
+        $this->line = $line;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTrace()
+    {
+        return $this->trace;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFile()
+    {
+        return $this->file;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLine()
+    {
+        return $this->line;
     }
 }

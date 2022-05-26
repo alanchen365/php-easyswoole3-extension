@@ -9,6 +9,26 @@ use Es3\Exception\ErrorException;
 
 class Curl extends HttpClient
 {
+
+    public function __construct(?string $url = null)
+    {
+        $this->url = $url;
+        parent::__construct($url);
+    }
+
+    /**
+     * @var 请求的url
+     */
+    protected $url;
+
+    /**
+     * @var bool 是否记录请求日志
+     */
+    protected $isLog = false;
+
+    /**
+     * @var bool 是否判断http请求是200
+     */
     protected $is200 = true;
 
     /**
@@ -72,6 +92,28 @@ class Curl extends HttpClient
     {
         try {
             $errCode = $response->getErrCode();
+
+            // 记录curl访问日志
+            $result = [
+                'request' => [
+                    'url' => $this->url,
+                    'header' => $response->getRequestHeaders(),
+                    'method' => $this->getClientHandler()->getRequest()->getMethod(),
+                    'params' => $response->getRequestBody(),
+                    'curl_setting' => $response->getSetting(),
+                ],
+
+                'response' => [
+                    'host' => $response->getHost(),
+                    'port' => $response->getPort(),
+                    'header' => $response->getHeaders(),
+                    'http_code' => $response->getStatusCode(),
+                    'body' => $response->getBody(),
+                    'error_code' => $response->getErrCode(),
+                    'error_msg' => $response->getErrMsg(),
+                ],
+            ];
+
             if ($errCode !== 0) {
                 throw new ErrorException(1021, '远程网络异常:' . $response->getErrMsg());
             }
@@ -110,5 +152,13 @@ class Curl extends HttpClient
     public function setIs200(bool $is200): void
     {
         $this->is200 = $is200;
+    }
+
+    /**
+     * @param bool $isLog
+     */
+    public function setIsLog(bool $isLog): void
+    {
+        $this->isLog = $isLog;
     }
 }

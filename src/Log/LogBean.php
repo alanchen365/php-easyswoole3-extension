@@ -51,11 +51,11 @@ class LogBean extends \EasySwoole\Spl\SplBean
         // 设置请求参数
         $this->setRequest(requestLog());
         // 设置所在文件
-        $this->setFile(Di::getInstance()->get(ResultConst::FILE_KEY));
+//        $this->setFile(Di::getInstance()->get(ResultConst::FILE_KEY));
         // 设置文件行数
-        $this->setLine(Di::getInstance()->get(ResultConst::LINE_KEY));
+//        $this->setLine(Di::getInstance()->get(ResultConst::LINE_KEY));
         // 设置调用堆栈
-        $this->setTrace(Di::getInstance()->get(ResultConst::TRACE_KEY));
+//        $this->setTrace(Di::getInstance()->get(ResultConst::TRACE_KEY));
         // 设置
         $this->setResponse(Di::getInstance()->get(\Es3\Constant\ResultConst::RESPONSE_KEY));
         // 在日志中写入自定义参数 限制100个字符
@@ -210,7 +210,7 @@ class LogBean extends \EasySwoole\Spl\SplBean
     {
         $this->msg = $msg;
     }
-
+//
     /**
      * @return mixed
      */
