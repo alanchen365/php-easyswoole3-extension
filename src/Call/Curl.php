@@ -3,6 +3,7 @@
 namespace Es3\Call;
 
 use EasySwoole\Component\Di;
+use EasySwoole\EasySwoole\Logger;
 use EasySwoole\HttpClient\Bean\Response;
 use  EasySwoole\HttpClient\HttpClient;
 use Es3\Exception\ErrorException;
@@ -114,6 +115,8 @@ class Curl extends HttpClient
                         'error_msg' => $response->getErrMsg(),
                     ],
                 ];
+                
+                Logger::getInstance()->info($result, 'curl');
             }
 
             if ($errCode !== 0) {
