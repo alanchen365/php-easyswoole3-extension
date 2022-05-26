@@ -93,26 +93,28 @@ class Curl extends HttpClient
         try {
             $errCode = $response->getErrCode();
 
-            // 记录curl访问日志
-            $result = [
-                'request' => [
-                    'url' => $this->url,
-                    'header' => $response->getRequestHeaders(),
-                    'method' => $this->getClientHandler()->getRequest()->getMethod(),
-                    'params' => $response->getRequestBody(),
-                    'curl_setting' => $response->getSetting(),
-                ],
+            if ($this->isLog) {
+                // 记录curl访问日志
+                $result = [
+                    'request' => [
+                        'url' => $this->url,
+                        'header' => $response->getRequestHeaders(),
+                        'method' => $this->getClientHandler()->getRequest()->getMethod(),
+                        'params' => $response->getRequestBody(),
+                        'curl_setting' => $response->getSetting(),
+                    ],
 
-                'response' => [
-                    'host' => $response->getHost(),
-                    'port' => $response->getPort(),
-                    'header' => $response->getHeaders(),
-                    'http_code' => $response->getStatusCode(),
-                    'body' => $response->getBody(),
-                    'error_code' => $response->getErrCode(),
-                    'error_msg' => $response->getErrMsg(),
-                ],
-            ];
+                    'response' => [
+                        'host' => $response->getHost(),
+                        'port' => $response->getPort(),
+                        'header' => $response->getHeaders(),
+                        'http_code' => $response->getStatusCode(),
+                        'body' => $response->getBody(),
+                        'error_code' => $response->getErrCode(),
+                        'error_msg' => $response->getErrMsg(),
+                    ],
+                ];
+            }
 
             if ($errCode !== 0) {
                 throw new ErrorException(1021, '远程网络异常:' . $response->getErrMsg());
