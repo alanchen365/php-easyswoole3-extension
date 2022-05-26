@@ -115,8 +115,8 @@ class Curl extends HttpClient
                         'error_msg' => $response->getErrMsg(),
                     ],
                 ];
-                
-                Logger::getInstance()->info($result, 'curl');
+
+                Logger::getInstance()->info(jsonEncode($result), 'curl');
             }
 
             if ($errCode !== 0) {
