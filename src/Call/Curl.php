@@ -126,10 +126,14 @@ class Curl extends HttpClient
         } catch (\Throwable $throwable) {
 
             $trace = $throwable->getTrace()[2] ?? null;
-            Di::getInstance()->set(\Es3\Constant\ResultConst::FILE_KEY, $trace['file'] ?? null . $trace['function'] ?? null);
-            Di::getInstance()->set(\Es3\Constant\ResultConst::LINE_KEY, $trace['line'] ?? null);
+            $file = $trace['file'] ?? null . $trace['function'] ?? null;
+            $line = $trace['line'] ?? null;
 
-            throw new ErrorException($throwable->getCode(), $throwable->getMessage());
+            Di::getInstance()->set(\Es3\Constant\ResultConst::FILE_KEY, $file);
+            Di::getInstance()->set(\Es3\Constant\ResultConst::LINE_KEY, $line);
+
+            $msg = $throwable->getMessage() . "file:{$file} line:{$line}";
+            throw new ErrorException($throwable->getCode(), $msg);
         }
     }
 
