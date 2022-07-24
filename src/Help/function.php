@@ -26,8 +26,17 @@ function config($keyPath = '', $env = false)
 
 function isHttp()
 {
-    $workId = \EasySwoole\EasySwoole\ServerManager::getInstance()->getSwooleServer()->worker_id ?? -1;
+    $request = Di::getInstance()->get(AppConst::DI_REQUEST);
+    if (superEmpty($request)) {
+        return false;
+    }
 
+    $swooleRequest = method_exists($request, 'getSwooleRequest') ? $request->getSwooleRequest() : null;
+    if (superEmpty($swooleRequest)) {
+        return null;
+    }
+
+    $workId = \EasySwoole\EasySwoole\ServerManager::getInstance()->getSwooleServer()->worker_id ?? -1;
     if ($workId < 0) {
         return false;
     }
