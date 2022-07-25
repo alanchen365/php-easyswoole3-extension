@@ -7,6 +7,7 @@ use EasySwoole\EasySwoole\Logger;
 use Es3\Exception\ErrorException;
 use Es3\Exception\InfoException;
 use Es3\Exception\WaringException;
+use Firebase\JWT\ExpiredException;
 
 /**
  * 配置自动加载
@@ -17,19 +18,19 @@ class Jwt
 {
     public function decode(?string $identity, ?string $key, ?string $alg): array
     {
+        if (superEmpty($identity)) {
+            throw new InfoException(1008, '身份信息缺失');
+        }
+
+        if (superEmpty($key) || superEmpty($alg)) {
+            throw new InfoException(1008, '关键身份信息缺失');
+        }
+
         try {
-            if (superEmpty($identity)) {
-                throw new InfoException(1008, '身份信息缺失');
-            }
-
-            if (superEmpty($key) || superEmpty($alg)) {
-                throw new InfoException(1008, '关键身份信息缺失');
-            }
-
             $token = \Firebase\JWT\JWT::decode($identity, $key, [$alg]);
             return (array)$token;
-        } catch (\Throwable $throwable) {
-            throw $throwable;
+        } catch (ExpiredException $expiredException) {
+            throw new \Exception("身份已过期,请重新登录", 1934);
         }
     }
 
